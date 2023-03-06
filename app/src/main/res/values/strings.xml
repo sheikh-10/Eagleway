@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Eagleway</string>
+    <string name="forward_button">Forward Button</string>
+    <string name="notification">Notification</string>
+    <string name="More">More</string>
+    <string name="search">Search</string>
+</resources>
