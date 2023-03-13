@@ -7,6 +7,15 @@ android {
     namespace 'com.shop.eagleway'
     compileSdk 33
 
+    signingConfigs {
+        config {
+            keyAlias 'video_player'
+            keyPassword 'Sheikh'
+            storeFile file('/Users/sheikhmohideen/AndroidStudioProjects/Eagleway/app/keystore.jks')
+            storePassword 'Sheikh'
+        }
+    }
+
     defaultConfig {
         applicationId "com.shop.eagleway"
         minSdk 21
@@ -24,6 +33,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
