@@ -1,10 +1,8 @@
-package com.shop.eagleway.ui
+package com.shop.eagleway.ui.registration.signup
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -23,7 +21,7 @@ import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier) {
+fun SignupScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -69,7 +67,7 @@ fun SignupScreen(modifier: Modifier = Modifier) {
                 fontSize = 30.sp,
             modifier = modifier.weight(1f))
 
-            IconButton(onClick = {}) {
+            IconButton(onClick = onClick) {
                 Icon(imageVector = Icons.Outlined.ArrowForward,
                     contentDescription = stringResource(R.string.forward_button))
             }

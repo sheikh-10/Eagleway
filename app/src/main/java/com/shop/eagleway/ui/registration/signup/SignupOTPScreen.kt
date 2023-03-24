@@ -17,7 +17,12 @@ import androidx.compose.ui.unit.sp
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 @Composable
-fun SignupOTPScreen(modifier: Modifier = Modifier) {
+fun SignupOTPScreen(modifier: Modifier = Modifier,
+                    onBack: () -> Unit = {},
+                    smsCode: String = "",
+                    onSmsCodeInput: (String) -> Unit = {},
+                    onNext: () -> Unit = {}
+                    ) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -25,22 +30,20 @@ fun SignupOTPScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Outlined.ArrowBack,
-                    contentDescription = "Back Button"
-                )
+        Box(modifier = modifier
+            .fillMaxWidth()
+            .size(30.dp)) {
+
+            IconButton(onClick = onBack, modifier = modifier.size(24.dp)) {
+                Icon(imageVector = Icons.Outlined.ArrowBack,
+                    contentDescription = "Back Button")
             }
 
-            Text(
-                text = "OTP",
-                fontSize = 18.sp,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-            )
+            Text(text = "OTP", fontSize = 18.sp, modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(align = Alignment.CenterHorizontally))
         }
+
 
         Text(text = "Verification Code",
             fontSize = 18.sp,
@@ -57,14 +60,14 @@ fun SignupOTPScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = modifier.height(20.dp))
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = smsCode,
+            onValueChange = onSmsCodeInput,
             modifier = modifier.fillMaxWidth()
             )
 
         Spacer(modifier = modifier.height(20.dp))
 
-        Button(onClick = {}, modifier = modifier
+        Button(onClick = onNext, modifier = modifier
             .height(50.dp)
             .fillMaxWidth()
             .padding(horizontal = 32.dp)

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "125842470602",
+    "project_id": "eagleway-76bbc",
+    "storage_bucket": "eagleway-76bbc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125842470602:android:7190b64c3cc319f9756633",
+        "android_client_info": {
+          "package_name": "com.shop.eagleway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "125842470602-ic2v68hp2ckbf5lihdlcanlej2tp89fm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZiTX74_1E58SMuzePUIF4o-RbSXY6wMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "125842470602-ic2v68hp2ckbf5lihdlcanlej2tp89fm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
