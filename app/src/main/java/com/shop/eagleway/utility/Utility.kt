@@ -3,8 +3,6 @@ package com.shop.eagleway.utility
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import com.shop.eagleway.BottomNavItem
-import com.shop.eagleway.ui.main.ProductScreen
 import com.shop.eagleway.ui.main.invoice.InvoiceAllScreen
 import com.shop.eagleway.ui.main.invoice.InvoicePaidScreen
 import com.shop.eagleway.ui.main.invoice.InvoiceUnpaidScreen

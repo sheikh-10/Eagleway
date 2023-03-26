@@ -55,107 +55,114 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         GrowBusiness(name = "App Store")
     )
 
-    Column(modifier = modifier.fillMaxSize()) {
+//    Column(modifier = modifier.fillMaxSize()) {
+//
+//        Card {
+//            Row(
+//                modifier = modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 16.dp, horizontal = 10.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//
+//                Spacer(modifier = modifier.width(10.dp))
+//                Icon(imageVector = Icons.Outlined.Star,
+//                    contentDescription = null)
+//                Spacer(modifier = modifier.width(10.dp))
+//                Text(text = "Dukhan", fontSize = 18.sp)
+//
+//                Spacer(modifier = modifier.weight(1f))
+//
+//                Icon(imageVector = Icons.Outlined.ThumbUp,
+//                    contentDescription = null,
+//                    modifier = modifier.size(20.dp)
+//                )
+//            }
+//        }
+//
+//        Divider(modifier = modifier.width(5.dp))
+//
+//        Card {
+//            Row(modifier = modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//                ) {
+//
+//                Spacer(modifier = modifier.width(10.dp))
+//                Icon(imageVector = Icons.Outlined.Star,
+//                    contentDescription = null)
+//                Spacer(modifier = modifier.width(10.dp))
+//                Text(text = "Upgrade to paid plan to enjoy best of Eagleway",
+//                    fontSize = 18.sp ,
+//                    modifier = modifier.weight(1f)
+//                    )
+//
+//                OutlinedButton(onClick = {}) {
+//                    Text(text = "Upgrade")
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = modifier.height(10.dp))
+//
+//        Card {
+//            Column {
+//                Row(modifier = modifier.fillMaxWidth()) {
+//                    Column(modifier = modifier.weight(1f)) {
+//                        Text(text = "Business summary", fontSize = 18.sp)
+//                        Text(text = "Complete Business summary in a glance",
+//                            fontSize = 16.sp)
+//                    }
+//
+//                    Text(text = "Today", fontSize = 16.sp)
+//
+//                    Icon(imageVector = Icons.Outlined.KeyboardArrowDown,
+//                        contentDescription = null)
+//                }
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+//                    items(homeCardDataList) { homeCardData ->
+//                        HomeCard(homeCardData = homeCardData)
+//                    }
+//                }
+//            }
+//        }
+//
+//        Card {
+//            Column {
+//                Text(text = "Manage Business", fontSize = 18.sp)
+//                Text(text = "Manage your business with different shortcuts",
+//                    fontSize = 16.sp)
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(4)) {
+//                    items(manageBusinessDataList) { manageBusinessData ->
+//                        ManageBusinessCard(manageBusiness = manageBusinessData)
+//                    }
+//                }
+//            }
+//        }
+//
+//        Card {
+//            Column {
+//                Text(text = "Grow Business", fontSize = 18.sp)
+//                Text(text = "Grow Business with Online website, Socail Selling",
+//                    fontSize = 16.sp)
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(4)) {
+//                    items(growBusinessDataList) { growBusinessData ->
+//                        GrowBusinessCard(growBusiness = growBusinessData)
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//    }
 
-        Card {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .wrapContentSize(align = Alignment.Center)) {
 
-                Spacer(modifier = modifier.width(10.dp))
-                Icon(imageVector = Icons.Outlined.Star,
-                    contentDescription = null)
-                Spacer(modifier = modifier.width(10.dp))
-                Text(text = "Dukhan", fontSize = 18.sp)
-
-                Spacer(modifier = modifier.weight(1f))
-
-                Icon(imageVector = Icons.Outlined.ThumbUp,
-                    contentDescription = null,
-                    modifier = modifier.size(20.dp)
-                )
-            }
-        }
-
-        Divider(modifier = modifier.width(5.dp))
-
-        Card {
-            Row(modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                Spacer(modifier = modifier.width(10.dp))
-                Icon(imageVector = Icons.Outlined.Star,
-                    contentDescription = null)
-                Spacer(modifier = modifier.width(10.dp))
-                Text(text = "Upgrade to paid plan to enjoy best of Eagleway",
-                    fontSize = 18.sp ,
-                    modifier = modifier.weight(1f)
-                    )
-
-                OutlinedButton(onClick = {}) {
-                    Text(text = "Upgrade")
-                }
-            }
-        }
-
-        Spacer(modifier = modifier.height(10.dp))
-
-        Card {
-            Column {
-                Row(modifier = modifier.fillMaxWidth()) {
-                    Column(modifier = modifier.weight(1f)) {
-                        Text(text = "Business summary", fontSize = 18.sp)
-                        Text(text = "Complete Business summary in a glance",
-                            fontSize = 16.sp)
-                    }
-
-                    Text(text = "Today", fontSize = 16.sp)
-
-                    Icon(imageVector = Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = null)
-                }
-
-                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                    items(homeCardDataList) { homeCardData ->
-                        HomeCard(homeCardData = homeCardData)
-                    }
-                }
-            }
-        }
-
-        Card {
-            Column {
-                Text(text = "Manage Business", fontSize = 18.sp)
-                Text(text = "Manage your business with different shortcuts",
-                    fontSize = 16.sp)
-
-                LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                    items(manageBusinessDataList) { manageBusinessData ->
-                        ManageBusinessCard(manageBusiness = manageBusinessData)
-                    }
-                }
-            }
-        }
-
-        Card {
-            Column {
-                Text(text = "Grow Business", fontSize = 18.sp)
-                Text(text = "Grow Business with Online website, Socail Selling",
-                    fontSize = 16.sp)
-
-                LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                    items(growBusinessDataList) { growBusinessData ->
-                        GrowBusinessCard(growBusiness = growBusinessData)
-                    }
-                }
-            }
-        }
-
-
+        Text(text = "Home Screen")
     }
 }
 

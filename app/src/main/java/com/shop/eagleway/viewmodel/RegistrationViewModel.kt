@@ -14,6 +14,12 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "RegistrationViewModel"
@@ -25,10 +31,15 @@ class RegistrationViewModel: ViewModel() {
     var smsCode by mutableStateOf("")
         private set
 
-    private var auth: FirebaseAuth = FirebaseAuth.getInstance()
+    var isSignedInUser by mutableStateOf(false)
+        private set
+
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database: FirebaseDatabase = Firebase.database
     private lateinit var callback: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
     private lateinit var verification: String
+
 
     fun updatePhoneNumber(phoneNumber: String) {
         userPhoneInput = phoneNumber
@@ -38,7 +49,7 @@ class RegistrationViewModel: ViewModel() {
         smsCode = code
     }
 
-    fun registerPhoneNumber(context: Context, onNextScreen: () -> Unit){
+    fun registerPhoneNumber(context: Context, onNextScreen: () -> Unit) {
         callback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -53,6 +64,7 @@ class RegistrationViewModel: ViewModel() {
                 verification = verificationId
                 Log.d(TAG, "Code Sent successfully")
                 onNextScreen()
+                auth.signOut()
             }
         }
 
@@ -62,14 +74,58 @@ class RegistrationViewModel: ViewModel() {
             .setActivity(context as Activity)
             .setCallbacks(callback)
             .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
+
+        if (auth.currentUser != null) {
+            Log.d(TAG, "User already signed in")
+        } else {
+            Log.e(TAG, "User is not signed in")
+        }
+
+        checkPhoneNumberFromDatabase {
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        }
     }
 
-    fun checkOTP() {
+
+    private fun checkPhoneNumberFromDatabase(verifyNumber: () -> Unit) {
+        val ref = database.getReference("users")
+
+        ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.value != null) {
+                    Log.i(TAG, "User already signed in")
+                    isSignedInUser = true
+                    verifyNumber()
+                } else {
+                    Log.i(TAG, "He is a new user")
+                    isSignedInUser = false
+                    writeUserEntryToDatabase()
+                    verifyNumber()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+
+        })
+    }
+
+    private fun writeUserEntryToDatabase() {
+        val ref = database.getReference("users")
+        ref.push().setValue(UserPhoneNumber(userPhoneInput))
+    }
+
+    fun checkOTP(onNextScreenSignedInUser: () -> Unit, onNextScreenNewUser: () -> Unit) {
         val credential = PhoneAuthProvider.getCredential(verification, smsCode)
 
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
+
+                if (isSignedInUser) {
+                    onNextScreenSignedInUser()
+                } else {
+                    onNextScreenNewUser()
+                }
+
                 Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
             } else {
                 Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
@@ -80,3 +136,5 @@ class RegistrationViewModel: ViewModel() {
         }
     }
 }
+
+data class UserPhoneNumber(val num: String?)

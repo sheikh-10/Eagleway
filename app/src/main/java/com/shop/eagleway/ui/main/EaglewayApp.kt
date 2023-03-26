@@ -1,4 +1,4 @@
-package com.shop.eagleway
+package com.shop.eagleway.ui.main
 
 import android.annotation.SuppressLint
 import androidx.compose.material.*
@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.shop.eagleway.EaglewayApp
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 class SupportActivity : ComponentActivity() {

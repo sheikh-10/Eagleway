@@ -1,10 +1,8 @@
 package com.shop.eagleway.ui.registration
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.shop.eagleway.EaglewayApp
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 class RegistrationActivity: ComponentActivity() {
@@ -12,7 +10,7 @@ class RegistrationActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EaglewayTheme {
-                RegistrationApp()
+                RegistrationApp(activity = this@RegistrationActivity)
             }
         }
     }
