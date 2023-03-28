@@ -9,9 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.shop.eagleway.ui.main.HomeActivity
-import com.shop.eagleway.ui.registration.signup.SignupOTPScreen
-import com.shop.eagleway.ui.registration.signup.SignupPhoneScreen
-import com.shop.eagleway.ui.registration.signup.SignupScreen
+import com.shop.eagleway.ui.registration.signup.*
 import com.shop.eagleway.viewmodel.RegistrationViewModel
 
 @Composable
@@ -48,15 +46,25 @@ fun RegistrationApp(modifier: Modifier = Modifier, viewModel: RegistrationViewMo
                     viewModel.checkOTP(
                         onNextScreenSignedInUser = {
                             activity?.finish()
-                            HomeActivity.startActivity(activity) },
+                            HomeActivity.startActivity(activity)
+                                                   },
                         onNextScreenNewUser = {
-                            activity?.finish()
-                            HomeActivity.startActivity(activity) },
+                            navController.navigate(RegistrationScreens.CreateBusinessInfoScreen.name)
+                                              },
                     )
 
                 },
                 smsCode = viewModel.smsCode,
                 onSmsCodeInput = { viewModel.updateSmsCodeInput(it) }
+            )
+        }
+
+        composable(route = RegistrationScreens. CreateBusinessInfoScreen.name) {
+            CreateBusinessInfoScreen(
+                onBack = { navController.navigateUp() },
+                onNext = {  activity?.finish()
+                    HomeActivity.startActivity(activity)
+                }
             )
         }
     }
@@ -66,5 +74,6 @@ fun RegistrationApp(modifier: Modifier = Modifier, viewModel: RegistrationViewMo
 enum class RegistrationScreens {
     SignupScreen,
     SignupPhoneScreen,
-    SignupOTPScreen
+    SignupOTPScreen,
+    CreateBusinessInfoScreen
 }
