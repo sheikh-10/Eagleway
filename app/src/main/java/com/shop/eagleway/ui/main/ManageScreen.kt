@@ -20,7 +20,7 @@ import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 @Composable
-fun ManageScreen(modifier: Modifier = Modifier) {
+fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState()).padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -36,8 +36,6 @@ fun ManageScreen(modifier: Modifier = Modifier) {
                 Text(text = "Manage", fontSize = 18.sp)
             }
         }
-
-
 
             StoreDetailsCard()
 
@@ -74,7 +72,7 @@ fun ManageScreen(modifier: Modifier = Modifier) {
                 )
 
 
-            OutlinedButton(onClick = {}, modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally)) {
+            OutlinedButton(onClick = onLogout, modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally)) {
                 Text(text = "Logout")
             }
 

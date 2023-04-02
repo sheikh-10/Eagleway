@@ -23,15 +23,24 @@ import com.google.firebase.ktx.Firebase
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "RegistrationViewModel"
-class RegistrationViewModel: ViewModel() {
+class RegistrationViewModel: ViewModel(), Registration {
 
     var userPhoneInput by mutableStateOf("")
+        private set
+
+    var userCountryCodeInput by mutableStateOf("91")
         private set
 
     var smsCode by mutableStateOf("")
         private set
 
     var isSignedInUser by mutableStateOf(false)
+        private set
+
+    var userName by mutableStateOf("")
+        private set
+
+    var businessName by mutableStateOf("")
         private set
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -45,11 +54,27 @@ class RegistrationViewModel: ViewModel() {
         userPhoneInput = phoneNumber
     }
 
+    fun updateCountryCode(countryCode: String) {
+        userCountryCodeInput = countryCode
+    }
+
     fun updateSmsCodeInput(code: String) {
         smsCode = code
     }
 
-    fun registerPhoneNumber(context: Context, onNextScreen: () -> Unit) {
+    fun updateUserInfo(user: String) { userName = user }
+
+    fun updateBusinessInfo(business: String) { businessName = business }
+
+    fun resetUserInput() {
+        userPhoneInput = ""
+        smsCode = ""
+        isSignedInUser = false
+        userName = ""
+        businessName = ""
+    }
+
+    fun registerPhoneNumber(context: Context, onNextScreen: () -> Unit, isCalledFromSignup: Boolean) {
         callback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -64,49 +89,19 @@ class RegistrationViewModel: ViewModel() {
                 verification = verificationId
                 Log.d(TAG, "Code Sent successfully")
                 onNextScreen()
-                auth.signOut()
             }
         }
 
         val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber("+91$userPhoneInput")
+            .setPhoneNumber("+$userCountryCodeInput$userPhoneInput")
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(context as Activity)
             .setCallbacks(callback)
             .build()
 
-        if (auth.currentUser != null) {
-            Log.d(TAG, "User already signed in")
-        } else {
-            Log.e(TAG, "User is not signed in")
-        }
-
-        checkPhoneNumberFromDatabase {
-            PhoneAuthProvider.verifyPhoneNumber(options)
-        }
-    }
-
-
-    private fun checkPhoneNumberFromDatabase(verifyNumber: () -> Unit) {
-        val ref = database.getReference("users")
-
-        ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null) {
-                    Log.i(TAG, "User already signed in")
-                    isSignedInUser = true
-                    verifyNumber()
-                } else {
-                    Log.i(TAG, "He is a new user")
-                    isSignedInUser = false
-                    writeUserEntryToDatabase()
-                    verifyNumber()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-
-        })
+        if (isCalledFromSignup) {
+            signup { PhoneAuthProvider.verifyPhoneNumber(options) }
+        } else login { PhoneAuthProvider.verifyPhoneNumber(options) }
     }
 
     private fun writeUserEntryToDatabase() {
@@ -114,7 +109,8 @@ class RegistrationViewModel: ViewModel() {
         ref.push().setValue(UserPhoneNumber(userPhoneInput))
     }
 
-    fun checkOTP(onNextScreenSignedInUser: () -> Unit, onNextScreenNewUser: () -> Unit) {
+    fun checkOTP(onNextScreenSignedInUser: () -> Unit,
+                 onNextScreenNewUser: () -> Unit) {
         val credential = PhoneAuthProvider.getCredential(verification, smsCode)
 
         auth.signInWithCredential(credential).addOnCompleteListener {
@@ -124,6 +120,7 @@ class RegistrationViewModel: ViewModel() {
                     onNextScreenSignedInUser()
                 } else {
                     onNextScreenNewUser()
+                    writeUserEntryToDatabase()
                 }
 
                 Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
@@ -135,6 +132,87 @@ class RegistrationViewModel: ViewModel() {
             }
         }
     }
+
+    override fun signup(verifyNumber: () -> Unit) {
+        val ref = database.getReference("users")
+
+        ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.value != null) {
+                    Log.i(TAG, "User already signed in")
+                    isSignedInUser = true
+                } else {
+                    Log.i(TAG, "He is a new user")
+                    isSignedInUser = false
+                    verifyNumber()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    override fun login(verifyNumber: () -> Unit) {
+        val ref = database.getReference("users")
+
+        ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.value != null) {
+                    Log.i(TAG, "User already signed in")
+                    isSignedInUser = false
+                    verifyNumber()
+                } else {
+                    Log.i(TAG, "He is a new user")
+                    isSignedInUser = true
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    override fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit) {
+        val credential = PhoneAuthProvider.getCredential(verification, smsCode)
+
+        auth.signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onNextScreenSignedInUser()
+                Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
+            } else {
+                Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
+                if (it.exception is FirebaseAuthInvalidCredentialsException) {
+                    Log.e(TAG, "verification code entered was invalid")
+                }
+            }
+        }
+    }
+
+    override fun checkOTPSignup(onNextScreenNewUser: () -> Unit) {
+        val credential = PhoneAuthProvider.getCredential(verification, smsCode)
+
+        auth.signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+
+                onNextScreenNewUser()
+                writeUserEntryToDatabase()
+
+                Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
+            } else {
+                Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
+                if (it.exception is FirebaseAuthInvalidCredentialsException) {
+                    Log.e(TAG, "verification code entered was invalid")
+                }
+            }
+        }
+    }
+}
+
+interface Registration {
+    fun signup(verifyNumber: () -> Unit)
+    fun login(verifyNumber: () -> Unit)
+
+    fun checkOTPSignup(onNextScreenNewUser: () -> Unit)
+    fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit)
 }
 
 data class UserPhoneNumber(val num: String?)

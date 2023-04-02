@@ -1,6 +1,7 @@
-package com.shop.eagleway.ui
+package com.shop.eagleway.ui.registration.login
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -16,22 +17,38 @@ import androidx.compose.ui.unit.sp
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 @Composable
-fun LoginPhoneScreen(modifier: Modifier = Modifier) {
+fun LoginPhoneScreen(modifier: Modifier = Modifier,
+                     onBack: () -> Unit = {},
+                     onNext: () -> Unit = {},
+                     phoneNumber: String = "",
+                     onPhoneNumberInput: (String) -> Unit = {},
+                     countryCode: String = "",
+                     onCountryCodeInput: (String) -> Unit = {},
+                     isUserSignedIn: Boolean = false
+
+                     ) {
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Outlined.ArrowBack,
-                    contentDescription = "Back Button")
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .size(30.dp)
+        ) {
+
+            IconButton(onClick = onBack, modifier = modifier.size(24.dp)) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowBack,
+                    contentDescription = "Back Button"
+                )
             }
 
-            Text(text = "Login",
-                fontSize = 18.sp,
-                modifier = modifier
+            Text(
+                text = "Login", fontSize = 18.sp, modifier = modifier
                     .fillMaxWidth()
-                    .wrapContentWidth(align = Alignment.CenterHorizontally))
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+            )
         }
 
         Text(text = "Welcome Back", fontSize = 30.sp)
@@ -39,26 +56,33 @@ fun LoginPhoneScreen(modifier: Modifier = Modifier) {
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
-                value = "91",
-                onValueChange = {},
+                value = countryCode,
+                onValueChange = onCountryCodeInput,
                 label = { Text(text = "Country") },
                 modifier = modifier.width(100.dp)
             )
 
             OutlinedTextField(
-                value = "999999999",
-                onValueChange = {},
-                label = { Text(text = "Mobile number") },
-                modifier = modifier.weight(1f))
+                value = phoneNumber,
+                onValueChange = onPhoneNumberInput,
+                label = { Text(text = if (!isUserSignedIn) "Mobile number" else "Create a new account" )},
+                modifier = modifier.weight(1f),
+                isError = isUserSignedIn
+                )
         }
 
         Spacer(modifier = modifier.height(40.dp))
 
-        Button(onClick = {}, modifier = modifier.height(50.dp)
+        Button(onClick = onNext, modifier = modifier
+            .height(50.dp)
             .fillMaxWidth()
             .padding(horizontal = 32.dp)
             .clip(RoundedCornerShape(20))) {
             Text(text = "Continue", fontSize = 20.sp)
+        }
+
+        BackHandler(enabled = true) {
+            onBack()
         }
     }
 }

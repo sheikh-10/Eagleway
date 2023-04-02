@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,12 +37,14 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
                       onBack: () -> Unit = {},
                       onNext: () -> Unit = {},
                       phoneNumber: String = "",
-                      onPhoneNumberInput: (String) -> Unit = {}
+                      onPhoneNumberInput: (String) -> Unit = {},
+                      countryCode: String = "",
+                      onCountryCodeInput: (String) -> Unit = {},
+                      isUserSignedIn: Boolean = false
                       ) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    var country by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -69,7 +72,7 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
             )
         }
 
-        Text(text = "Welcome Back", fontSize = 30.sp)
+        Text(text = "Welcome", fontSize = 30.sp)
         Text(text = "Enter your details to continue")
 
         Row(
@@ -77,8 +80,8 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedTextField(
-                value = country,
-                onValueChange = { country = it },
+                value = countryCode,
+                onValueChange = onCountryCodeInput,
                 label = { Text(text = "Country") },
                 modifier = modifier.width(100.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -94,7 +97,7 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = onPhoneNumberInput,
-                label = { Text(text = "Mobile number") },
+                label = { Text(text = if (!isUserSignedIn) "Mobile Number" else "User already signed in") },
                 modifier = modifier.weight(1f),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -103,7 +106,8 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus() }
                 ),
-                singleLine = true
+                singleLine = true,
+                isError = isUserSignedIn,
             )
         }
 
@@ -120,6 +124,10 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
         ) {
             Text(text = "Continue", fontSize = 20.sp)
         }
+    }
+
+    BackHandler(enabled = true) {
+        onBack()
     }
 }
 

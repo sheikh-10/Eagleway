@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.runtime.Composable
@@ -21,7 +22,12 @@ import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
 
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+fun SignupScreen(modifier: Modifier = Modifier,
+                 onClickSignupScreen: () -> Unit = {},
+                 onClickLoginScreen: () -> Unit = {},
+
+                 ) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -67,7 +73,7 @@ fun SignupScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
                 fontSize = 30.sp,
             modifier = modifier.weight(1f))
 
-            IconButton(onClick = onClick) {
+            IconButton(onClick = onClickSignupScreen) {
                 Icon(imageVector = Icons.Outlined.ArrowForward,
                     contentDescription = stringResource(R.string.forward_button))
             }
@@ -80,7 +86,10 @@ fun SignupScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
 
             Text(text = "Already have an account?", fontSize = 20.sp)
             Spacer(modifier = modifier.width(6.dp))
-            Text(text = "Login", fontSize = 20.sp)
+
+            TextButton(onClick = onClickLoginScreen) {
+                Text(text = "Login", fontSize = 20.sp)
+            }
         }
 
         Spacer(modifier = modifier.height(50.dp))

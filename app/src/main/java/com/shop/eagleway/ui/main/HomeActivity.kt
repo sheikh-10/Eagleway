@@ -20,7 +20,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EaglewayTheme {
-                EaglewayApp()
+                EaglewayApp(activity = this@HomeActivity)
             }
         }
     }

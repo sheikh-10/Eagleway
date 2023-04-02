@@ -1,6 +1,7 @@
 package com.shop.eagleway.ui.main
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -18,15 +19,39 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.*
+import com.shop.eagleway.viewmodel.HomeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.shop.eagleway.ui.registration.RegistrationActivity
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun EaglewayApp(modifier: Modifier = Modifier) {
+fun EaglewayApp(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel(), activity: Activity?) {
 
     val navController = rememberNavController()
 
     Scaffold(bottomBar = { BottomNavigation(navController = navController) }) {
-        NavigationGraph(navController = navController)
+        NavHost(navController, startDestination = BottomNavItem.HomeScreen.screenRoute) {
+
+            composable(BottomNavItem.HomeScreen.screenRoute) {
+                HomeScreen()
+            }
+            composable(BottomNavItem.InvoiceScreen.screenRoute) {
+                InvoiceScreen()
+            }
+            composable(BottomNavItem.OrderScreen.screenRoute) {
+                OrderScreen()
+            }
+            composable(BottomNavItem.ProductScreen.screenRoute) {
+                ProductScreen()
+            }
+            composable(BottomNavItem.ManageScreen.screenRoute) {
+                ManageScreen(onLogout = {
+                    viewModel.logout()
+                    activity?.finish()
+                    RegistrationActivity.startActivity(activity)
+                })
+            }
+        }
     }
 }
 
@@ -71,28 +96,6 @@ sealed class BottomNavItem(
         icon = Icons.Outlined.Settings,
         screenRoute = EaglewayAppScreen.ManageScreen.name)
 
-}
-
-@Composable
-fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = BottomNavItem.HomeScreen.screenRoute) {
-
-        composable(BottomNavItem.HomeScreen.screenRoute) {
-            HomeScreen()
-        }
-        composable(BottomNavItem.InvoiceScreen.screenRoute) {
-            InvoiceScreen()
-        }
-        composable(BottomNavItem.OrderScreen.screenRoute) {
-            OrderScreen()
-        }
-        composable(BottomNavItem.ProductScreen.screenRoute) {
-            ProductScreen()
-        }
-        composable(BottomNavItem.ManageScreen.screenRoute) {
-            ManageScreen()
-        }
-    }
 }
 
 

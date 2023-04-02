@@ -16,7 +16,12 @@ import com.shop.eagleway.ui.theme.EaglewayTheme
 @Composable
 fun CreateBusinessInfoScreen(modifier: Modifier = Modifier,
                              onBack: () -> Unit = {},
-                             onNext: () -> Unit = {}) {
+                             onNext: () -> Unit = {},
+                             userName: String = "",
+                             businessName: String = "",
+                             onUserNameInput: (String) -> Unit = {},
+                             onBusinessNameInput: (String) -> Unit = {}
+                             ) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -31,15 +36,15 @@ fun CreateBusinessInfoScreen(modifier: Modifier = Modifier,
         Text(text = "Please add your business information to get started", style = MaterialTheme.typography.body2)
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = userName,
+            onValueChange = onUserNameInput,
             label = { Text(text = "Your name") },
             modifier = modifier.fillMaxWidth()
             )
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = businessName,
+            onValueChange = onBusinessNameInput,
             label = { Text(text = "Business name") },
             modifier = modifier.fillMaxWidth()
         )
