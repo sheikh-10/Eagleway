@@ -2,15 +2,20 @@ package com.shop.eagleway.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,6 +26,9 @@ import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.*
 import com.shop.eagleway.viewmodel.HomeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.shop.eagleway.ui.registration.RegistrationActivity
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -29,7 +37,12 @@ fun EaglewayApp(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
 
     val navController = rememberNavController()
 
-    Scaffold(bottomBar = { BottomNavigation(navController = navController) }) {
+    Scaffold(bottomBar = {
+        Column {
+//            BannerAd()
+            BottomNavigation(navController = navController)
+        }
+    }) {
         NavHost(navController, startDestination = BottomNavItem.HomeScreen.screenRoute) {
 
             composable(BottomNavItem.HomeScreen.screenRoute) {
@@ -97,7 +110,6 @@ sealed class BottomNavItem(
         screenRoute = EaglewayAppScreen.ManageScreen.name)
 
 }
-
 
 @Composable
 fun BottomNavigation(navController: NavController) {

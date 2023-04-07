@@ -21,8 +21,8 @@ android {
         applicationId "com.shop.eagleway"
         minSdk 21
         targetSdk 33
-        versionCode 5
-        versionName "1.0.4"
+        versionCode 7
+        versionName "1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -87,5 +87,5 @@ dependencies {
     //viewmodel
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
 
-
+    implementation 'com.google.android.gms:play-services-ads:22.0.0'
 }

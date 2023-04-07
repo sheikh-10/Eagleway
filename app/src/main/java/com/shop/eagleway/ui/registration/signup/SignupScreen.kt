@@ -25,7 +25,6 @@ import com.shop.eagleway.ui.theme.EaglewayTheme
 fun SignupScreen(modifier: Modifier = Modifier,
                  onClickSignupScreen: () -> Unit = {},
                  onClickLoginScreen: () -> Unit = {},
-
                  ) {
 
     Column(
