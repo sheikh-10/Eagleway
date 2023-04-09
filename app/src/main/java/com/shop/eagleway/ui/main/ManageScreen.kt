@@ -16,11 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
+import com.shop.eagleway.viewmodel.HomeViewModel
 
 @Composable
-fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}) {
+fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewModel: HomeViewModel = viewModel(),) {
     Column(modifier = modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState()).padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -37,7 +39,7 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}) {
             }
         }
 
-            StoreDetailsCard()
+            StoreDetailsCard(businessName = viewModel.businessName)
 
             MajorSettings(titleText = "Online Store Settings",
                 descriptionText = "Manage delivery, payment, seo & store color")
@@ -121,7 +123,7 @@ private fun MinorSettings(modifier: Modifier = Modifier,
 }
 
 @Composable
-private fun StoreDetailsCard(modifier: Modifier = Modifier) {
+private fun StoreDetailsCard(modifier: Modifier = Modifier, businessName: String = "") {
     Card(elevation = 4.dp, shape = RoundedCornerShape(10), modifier = modifier.padding(10.dp)) {
         Column(modifier = modifier
             .fillMaxWidth()
@@ -130,7 +132,7 @@ private fun StoreDetailsCard(modifier: Modifier = Modifier) {
             Text(text = "Store Details")
 
             Row {
-                Text(text = "Dukhan", fontSize = 18.sp)
+                Text(text = businessName, fontSize = 18.sp)
                 Spacer(modifier = modifier.weight(1f))
                 StoreDetailsLogoCard()
             }

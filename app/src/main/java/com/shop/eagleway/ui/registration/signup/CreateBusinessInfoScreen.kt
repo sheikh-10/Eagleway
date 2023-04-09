@@ -3,12 +3,18 @@ package com.shop.eagleway.ui.registration.signup
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shop.eagleway.ui.theme.EaglewayTheme
@@ -22,6 +28,9 @@ fun CreateBusinessInfoScreen(modifier: Modifier = Modifier,
                              onUserNameInput: (String) -> Unit = {},
                              onBusinessNameInput: (String) -> Unit = {}
                              ) {
+
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -39,14 +48,30 @@ fun CreateBusinessInfoScreen(modifier: Modifier = Modifier,
             value = userName,
             onValueChange = onUserNameInput,
             label = { Text(text = "Your name") },
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            singleLine = true
             )
 
         OutlinedTextField(
             value = businessName,
             onValueChange = onBusinessNameInput,
             label = { Text(text = "Business name") },
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
+            singleLine = true
         )
 
         Spacer(modifier = modifier.weight(1f))

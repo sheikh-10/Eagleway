@@ -65,7 +65,9 @@ fun RegistrationApp(modifier: Modifier = Modifier, viewModel: RegistrationViewMo
         composable(route = RegistrationScreens.CreateBusinessInfoScreen.name) {
             CreateBusinessInfoScreen(
                 onBack = { navController.navigateUp() },
-                onNext = {  activity?.finish()
+                onNext = {
+                    viewModel.writeUserInfoToDatabase(context)
+                    activity?.finish()
                     HomeActivity.startActivity(activity)
                 },
                 userName = viewModel.userName,
@@ -100,10 +102,12 @@ fun RegistrationApp(modifier: Modifier = Modifier, viewModel: RegistrationViewMo
             LoginOTPScreen(
                 onBack = { navController.navigateUp() },
                 onNext = {
-                    viewModel.checkOTPLogin {
-                        activity?.finish()
-                        HomeActivity.startActivity(activity)
-                    }
+                    viewModel.checkOTPLogin(
+                        onNextScreenSignedInUser =  {
+                            activity?.finish()
+                            HomeActivity.startActivity(activity)
+                        },
+                        context = context)
                 },
                 smsCode = viewModel.smsCode,
                 onSmsCodeInput = { viewModel.updateSmsCodeInput(it) }

@@ -2,6 +2,7 @@ package com.shop.eagleway.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -30,12 +31,17 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.shop.eagleway.ui.registration.RegistrationActivity
+import com.shop.eagleway.viewmodel.RegistrationViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun EaglewayApp(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel(), activity: Activity?) {
+fun EaglewayApp(modifier: Modifier = Modifier,
+                viewModel: HomeViewModel = viewModel(),
+                activity: Activity?) {
 
     val navController = rememberNavController()
+
+    viewModel.readUserInfoFromDatabase(LocalContext.current)
 
     Scaffold(bottomBar = {
         Column {
@@ -46,7 +52,7 @@ fun EaglewayApp(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
         NavHost(navController, startDestination = BottomNavItem.HomeScreen.screenRoute) {
 
             composable(BottomNavItem.HomeScreen.screenRoute) {
-                HomeScreen()
+                HomeScreen(viewModel = viewModel)
             }
             composable(BottomNavItem.InvoiceScreen.screenRoute) {
                 InvoiceScreen()
@@ -62,7 +68,9 @@ fun EaglewayApp(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
                     viewModel.logout()
                     activity?.finish()
                     RegistrationActivity.startActivity(activity)
-                })
+                },
+                viewModel = viewModel
+                    )
             }
         }
     }

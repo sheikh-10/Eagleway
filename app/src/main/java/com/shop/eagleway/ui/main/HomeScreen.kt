@@ -26,11 +26,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
+import com.shop.eagleway.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier,
+               viewModel: HomeViewModel = viewModel()) {
 
     val homeCardDataList = listOf<HomeCardData>(
         HomeCardData(name = "Sale", value = 0, iconRes = R.drawable.ic_sale),
@@ -79,7 +82,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 Icon(imageVector = Icons.Outlined.ShoppingCart,
                     contentDescription = null)
                 Spacer(modifier = modifier.width(10.dp))
-                Text(text = "Eagleway", fontSize = 18.sp)
+                Text(text = viewModel.businessName, fontSize = 18.sp)
 
                 Spacer(modifier = modifier.weight(1f))
 

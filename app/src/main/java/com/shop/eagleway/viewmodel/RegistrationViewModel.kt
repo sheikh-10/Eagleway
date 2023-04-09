@@ -109,30 +109,6 @@ class RegistrationViewModel: ViewModel(), Registration {
         ref.push().setValue(UserPhoneNumber(userPhoneInput))
     }
 
-    fun checkOTP(onNextScreenSignedInUser: () -> Unit,
-                 onNextScreenNewUser: () -> Unit) {
-        val credential = PhoneAuthProvider.getCredential(verification, smsCode)
-
-        auth.signInWithCredential(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-
-                if (isSignedInUser) {
-                    onNextScreenSignedInUser()
-                } else {
-                    onNextScreenNewUser()
-                    writeUserEntryToDatabase()
-                }
-
-                Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
-            } else {
-                Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
-                if (it.exception is FirebaseAuthInvalidCredentialsException) {
-                    Log.e(TAG, "verification code entered was invalid")
-                }
-            }
-        }
-    }
-
     override fun signup(verifyNumber: () -> Unit) {
         val ref = database.getReference("users")
 
@@ -171,11 +147,12 @@ class RegistrationViewModel: ViewModel(), Registration {
         })
     }
 
-    override fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit) {
+    override fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context) {
         val credential = PhoneAuthProvider.getCredential(verification, smsCode)
 
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
+                storeNumToLocalDb(context)
                 onNextScreenSignedInUser()
                 Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
             } else {
@@ -205,6 +182,19 @@ class RegistrationViewModel: ViewModel(), Registration {
             }
         }
     }
+
+    fun writeUserInfoToDatabase(context: Context) {
+        val ref = database.getReference("usersInfo")
+        storeNumToLocalDb(context)
+        ref.push().setValue(User(userPhoneInput,
+            User.UserInfo(userName = userName, businessName = businessName)))
+    }
+
+    private fun storeNumToLocalDb(context: Context) {
+        context.getSharedPreferences("userNum", Context.MODE_PRIVATE).apply {
+            edit().putString("num", userPhoneInput).apply()
+        }
+    }
 }
 
 interface Registration {
@@ -212,7 +202,12 @@ interface Registration {
     fun login(verifyNumber: () -> Unit)
 
     fun checkOTPSignup(onNextScreenNewUser: () -> Unit)
-    fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit)
+    fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context)
 }
 
 data class UserPhoneNumber(val num: String?)
+
+data class User(val userNum: String? = null, val userInfo: UserInfo? = null) {
+    data class UserInfo(val userName: String? = null,
+                        val businessName: String? = null)
+}

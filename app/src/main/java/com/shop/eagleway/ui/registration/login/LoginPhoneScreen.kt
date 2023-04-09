@@ -4,6 +4,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -11,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,8 +31,10 @@ fun LoginPhoneScreen(modifier: Modifier = Modifier,
                      countryCode: String = "",
                      onCountryCodeInput: (String) -> Unit = {},
                      isUserSignedIn: Boolean = false
-
                      ) {
+
+    val focusManager = LocalFocusManager.current
+
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -59,7 +67,15 @@ fun LoginPhoneScreen(modifier: Modifier = Modifier,
                 value = countryCode,
                 onValueChange = onCountryCodeInput,
                 label = { Text(text = "Country") },
-                modifier = modifier.width(100.dp)
+                modifier = modifier.width(100.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Right) }
+                ),
+                singleLine = true
             )
 
             OutlinedTextField(
@@ -67,6 +83,14 @@ fun LoginPhoneScreen(modifier: Modifier = Modifier,
                 onValueChange = onPhoneNumberInput,
                 label = { Text(text = if (!isUserSignedIn) "Mobile number" else "Create a new account" )},
                 modifier = modifier.weight(1f),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                ),
+                singleLine = true,
                 isError = isUserSignedIn
                 )
         }
