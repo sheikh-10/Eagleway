@@ -3,6 +3,7 @@ package com.shop.eagleway.ui.main
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
@@ -86,35 +89,35 @@ enum class EaglewayAppScreen(val title: String) {
 
 sealed class BottomNavItem(
     var title: String,
-    var icon: ImageVector,
+    @DrawableRes var icon: Int,
     var screenRoute: String) {
 
     object HomeScreen: BottomNavItem(
         title = EaglewayAppScreen.HomeScreen.title,
-        icon = Icons.Outlined.Home,
+        icon = R.drawable.ic_home,
         screenRoute = EaglewayAppScreen.HomeScreen.name)
 
 
     object InvoiceScreen: BottomNavItem(
         title = EaglewayAppScreen.InvoiceScreen.title,
-        icon = Icons.Outlined.Info,
+        icon = R.drawable.ic_invoice,
         screenRoute = EaglewayAppScreen.InvoiceScreen.name)
 
 
     object OrderScreen: BottomNavItem(
         title = EaglewayAppScreen.OrderScreen.title,
-        icon = Icons.Outlined.FavoriteBorder,
+        icon = R.drawable.ic_bag,
         screenRoute = EaglewayAppScreen.OrderScreen.name)
 
 
     object ProductScreen: BottomNavItem(
         title = EaglewayAppScreen.ProductScreen.title,
-        icon = Icons.Outlined.ArrowBack,
+        icon = R.drawable.ic_product,
         screenRoute = EaglewayAppScreen.ProductScreen.name)
 
     object ManageScreen: BottomNavItem(
         title = EaglewayAppScreen.ManageScreen.title,
-        icon = Icons.Outlined.Settings,
+        icon = R.drawable.ic_settings,
         screenRoute = EaglewayAppScreen.ManageScreen.name)
 
 }
@@ -136,9 +139,8 @@ fun BottomNavigation(navController: NavController) {
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             BottomNavigationItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
-                label = { Text(text = item.title,
-                    fontSize = 9.sp) },
+                icon = { Icon(painter = painterResource(id = item.icon), contentDescription = item.title, modifier = Modifier.size(24.dp)) },
+                label = { Text(text = item.title, fontSize = 12.sp) },
                 selectedContentColor = androidx.compose.ui.graphics.Color.Black,
                 unselectedContentColor = androidx.compose.ui.graphics.Color.Black.copy(0.4f),
                 alwaysShowLabel = true,

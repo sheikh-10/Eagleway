@@ -48,12 +48,20 @@ fun ProductScreen(modifier: Modifier = Modifier) {
 
             Spacer(modifier = modifier.weight(1f))
 
+
+            Spacer(modifier = modifier.weight(1f))
+
+            FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
+                Text(text = "40", fontSize = 16.sp)
+            }
+
+            Spacer(modifier = modifier.width(10.dp))
+
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(imageVector = Icons.Outlined.Search,
                     contentDescription = stringResource(R.string.search)
                 )
             }
-
         }
 
 

@@ -23,21 +23,37 @@ import com.shop.eagleway.viewmodel.HomeViewModel
 
 @Composable
 fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewModel: HomeViewModel = viewModel(),) {
-    Column(modifier = modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()).padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+    Column(modifier = modifier.fillMaxSize()) {
+
         Card {
             Row(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 10.dp),
+                    .fillMaxWidth().height(60.dp)
+                    .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Spacer(modifier = modifier.width(10.dp))
                 Text(text = "Manage", fontSize = 18.sp)
+
+
+                Spacer(modifier = modifier.weight(1f))
+
+                FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
+                    Text(text = "40", fontSize = 16.sp)
+                }
+
+                Spacer(modifier = modifier.width(10.dp))
+
             }
         }
+
+        Column(modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
 
             StoreDetailsCard(businessName = viewModel.businessName)
 
@@ -60,26 +76,30 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewM
                 descriptionText = "Manage your business by adding staff members")
 
 
-                MinorSettings(
-                    titleText = "Profile Details",
-                    descriptionText = "Set name, phone number, language & email"
-                )
-                MinorSettings(
-                    titleText = "QR code",
-                    descriptionText = "Download QR code"
-                )
-                MinorSettings(
-                        titleText = "About us",
+            MinorSettings(
+                titleText = "Profile Details",
+                descriptionText = "Set name, phone number, language & email"
+            )
+            MinorSettings(
+                titleText = "QR code",
+                descriptionText = "Download QR code"
+            )
+            MinorSettings(
+                titleText = "About us",
                 descriptionText = "About Us, App Version and other information"
-                )
+            )
 
 
-            OutlinedButton(onClick = onLogout, modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally)) {
+            OutlinedButton(onClick = onLogout, modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(align = Alignment.CenterHorizontally)) {
                 Text(text = "Logout")
             }
 
 
+        }
     }
+
 }
 
 @Composable
