@@ -41,7 +41,7 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewM
                 Spacer(modifier = modifier.weight(1f))
 
                 FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                    Text(text = "40", fontSize = 16.sp)
+                    Text(text = (viewModel.timeData / 1000).toInt().toString())
                 }
 
                 Spacer(modifier = modifier.width(10.dp))

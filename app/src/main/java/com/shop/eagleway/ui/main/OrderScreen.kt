@@ -20,14 +20,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.*
 import com.shop.eagleway.R
 import com.shop.eagleway.utility.OrdersTabItem
+import com.shop.eagleway.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun OrderScreen(modifier: Modifier = Modifier) {
+fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel(),) {
 
     val tabs = listOf(
         OrdersTabItem.New,
@@ -58,7 +60,7 @@ fun OrderScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = modifier.weight(1f))
 
             FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                Text(text = "40", fontSize = 16.sp)
+                Text(text = (viewModel.timeData / 1000).toInt().toString())
             }
 
             Spacer(modifier = modifier.width(10.dp))

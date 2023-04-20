@@ -1,6 +1,7 @@
 package com.shop.eagleway.ui.main
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.os.CountDownTimer
 import android.provider.Contacts.Intents.UI
 import android.util.Log
 import androidx.annotation.ColorInt
@@ -19,7 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,11 +35,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.viewmodel.HomeViewModel
+import kotlinx.coroutines.delay
+import java.util.*
 
 private const val TAG = "HomeScreen"
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier,
-               viewModel: HomeViewModel = viewModel()) {
+               viewModel: HomeViewModel = viewModel(),
+                showInterstitialAd: () -> Unit = {}
+               ) {
 
     val homeCardDataList = listOf<HomeCardData>(
         HomeCardData(name = "Sale", value = 0, iconRes = R.drawable.ic_sale, bgColor = R.color.light_red),
@@ -89,8 +94,10 @@ fun HomeScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.weight(1f))
 
-                FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                    Text(text = "40", fontSize = 16.sp)
+                FloatingActionButton(onClick = { }, modifier = modifier.size(40.dp)) {
+//                    Timer { showInterstitialAd() }
+//                    Text(text = "40", fontSize = 16.sp)
+                    Text(text = (viewModel.timeData / 1000).toInt().toString())
                 }
 
                 Spacer(modifier = modifier.width(10.dp))

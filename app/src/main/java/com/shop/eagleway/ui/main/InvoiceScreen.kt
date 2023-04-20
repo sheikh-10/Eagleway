@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.*
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.tabs.TabItem
@@ -29,11 +30,12 @@ import com.shop.eagleway.ui.main.invoice.PurchaseOrderActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.utility.InvoiceTabItem
 import com.shop.eagleway.utility.toast
+import com.shop.eagleway.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
-fun InvoiceScreen(modifier: Modifier = Modifier) {
+fun InvoiceScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel(),) {
 
     val context = LocalContext.current
     var isClicked by remember { mutableStateOf(false) }
@@ -63,7 +65,7 @@ fun InvoiceScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = modifier.weight(1f))
 
             FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                Text(text = "40", fontSize = 16.sp)
+                Text(text = (viewModel.timeData / 1000).toInt().toString())
             }
 
             Spacer(modifier = modifier.width(10.dp))

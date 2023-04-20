@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,14 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.shop.eagleway.ui.theme.EaglewayTheme
+import com.shop.eagleway.viewmodel.HomeViewModel
 
 class HomeActivity : ComponentActivity() {
+
+    private val viewModel: HomeViewModel by viewModels()
 
     companion object {
         fun startActivity(activity: Activity?) {
@@ -38,7 +41,7 @@ class HomeActivity : ComponentActivity() {
                 EaglewayApp(activity = this@HomeActivity)
             }
 
-//            BannerAd()
+            viewModel.loadInterstitial(this@HomeActivity)
         }
     }
 
@@ -60,4 +63,6 @@ class HomeActivity : ComponentActivity() {
                 }
             })
     }
+
+
 }
