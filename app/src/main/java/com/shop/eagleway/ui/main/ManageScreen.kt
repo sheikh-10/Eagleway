@@ -1,7 +1,9 @@
 package com.shop.eagleway.ui.main
 
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,24 +14,33 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
+import com.shop.eagleway.ui.main.manage.profile.SetProfileActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.viewmodel.HomeViewModel
 
 @Composable
-fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewModel: HomeViewModel = viewModel(),) {
+fun ManageScreen(
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {},
+    viewModel: HomeViewModel = viewModel(),
+    activity: Activity? = null
+    ) {
 
     Column(modifier = modifier.fillMaxSize()) {
 
         Card {
             Row(
                 modifier = modifier
-                    .fillMaxWidth().height(60.dp)
+                    .fillMaxWidth()
+                    .height(60.dp)
                     .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -37,11 +48,27 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewM
                 Spacer(modifier = modifier.width(10.dp))
                 Text(text = "Manage", fontSize = 18.sp)
 
-
                 Spacer(modifier = modifier.weight(1f))
 
-                FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                    Text(text = (viewModel.timeData / 1000).toInt().toString())
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = modifier.size(40.dp),
+                    backgroundColor = colorResource(id = R.color.light_pink)) {
+                    Text(
+                        text = (viewModel.timeData / 1000).toInt().toString(),
+                        color = when ((viewModel.timeData /1000).toInt()) {
+                            9 -> Color.Red
+                            8 -> Color.White
+                            7 -> Color.Red
+                            6 -> Color.White
+                            5 -> Color.Red
+                            4 -> Color.White
+                            3 -> Color.Red
+                            2 -> Color.White
+                            1 -> Color.Red
+                            else -> Color.White
+                        }
+                    )
                 }
 
                 Spacer(modifier = modifier.width(10.dp))
@@ -53,7 +80,6 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewM
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
 
             StoreDetailsCard(businessName = viewModel.businessName)
 
@@ -75,31 +101,29 @@ fun ManageScreen(modifier: Modifier = Modifier, onLogout: () -> Unit = {}, viewM
             MajorSettings(titleText = "Manage Staff",
                 descriptionText = "Manage your business by adding staff members")
 
-
             MinorSettings(
                 titleText = "Profile Details",
-                descriptionText = "Set name, phone number, language & email"
-            )
+                descriptionText = "Set name, phone number, language & email") {
+                SetProfileActivity.startActivity(activity)
+            }
+
             MinorSettings(
                 titleText = "QR code",
-                descriptionText = "Download QR code"
-            )
+                descriptionText = "Download QR code") {
+            }
+
             MinorSettings(
                 titleText = "About us",
-                descriptionText = "About Us, App Version and other information"
-            )
-
+                descriptionText = "About Us, App Version and other information") {
+            }
 
             OutlinedButton(onClick = onLogout, modifier = modifier
                 .fillMaxWidth()
                 .wrapContentWidth(align = Alignment.CenterHorizontally)) {
                 Text(text = "Logout")
             }
-
-
         }
     }
-
 }
 
 @Composable
@@ -127,18 +151,24 @@ private fun MajorSettings(modifier: Modifier = Modifier,
 @Composable
 private fun MinorSettings(modifier: Modifier = Modifier,
                           titleText: String,
-                          descriptionText: String
+                          descriptionText: String,
+                          onClick: () -> Unit
                           ) {
-    Row(modifier = modifier
-        .fillMaxWidth()
-        .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 10.dp)) {
+    Card(shape = RoundedCornerShape(20),
+        modifier = modifier.padding(5.dp).clickable(onClick = onClick)) {
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 10.dp),
+        verticalAlignment = Alignment.CenterVertically) {
 
-        Column(horizontalAlignment = Alignment.Start, modifier = modifier.weight(1f)) {
-            Text(text = titleText, fontSize = 18.sp)
-            Text(text = descriptionText)
+            Column(horizontalAlignment = Alignment.Start,
+                modifier = modifier.weight(1f)) {
+                Text(text = titleText, fontSize = 18.sp)
+                Text(text = descriptionText)
+            }
+
+            Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = null)
         }
-
-        Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = null)
     }
 }
 

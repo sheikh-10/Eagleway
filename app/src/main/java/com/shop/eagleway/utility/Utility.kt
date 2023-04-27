@@ -1,6 +1,7 @@
 package com.shop.eagleway.utility
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import com.shop.eagleway.ui.main.invoice.InvoiceAllScreen
@@ -13,6 +14,10 @@ import com.shop.eagleway.ui.main.product.ProductsScreen
 
 fun String.toast(context: Context) {
     Toast.makeText(context, this, Toast.LENGTH_LONG).show()
+}
+
+fun String.log(tag: String) {
+    Log.d(tag, this)
 }
 
 typealias ComposableFun = @Composable () -> Unit

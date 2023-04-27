@@ -16,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,11 +57,27 @@ fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
 
             Spacer(modifier = modifier.weight(1f))
 
-
             Spacer(modifier = modifier.weight(1f))
 
-            FloatingActionButton(onClick = {}, modifier = modifier.size(40.dp)) {
-                Text(text = (viewModel.timeData / 1000).toInt().toString())
+            FloatingActionButton(
+                onClick = { },
+                modifier = modifier.size(40.dp),
+                backgroundColor = colorResource(id = R.color.light_pink)) {
+                Text(
+                    text = (viewModel.timeData / 1000).toInt().toString(),
+                    color = when ((viewModel.timeData /1000).toInt()) {
+                        9 -> Color.Red
+                        8 -> Color.White
+                        7 -> Color.Red
+                        6 -> Color.White
+                        5 -> Color.Red
+                        4 -> Color.White
+                        3 -> Color.Red
+                        2 -> Color.White
+                        1 -> Color.Red
+                        else -> Color.White
+                    }
+                )
             }
 
             Spacer(modifier = modifier.width(10.dp))

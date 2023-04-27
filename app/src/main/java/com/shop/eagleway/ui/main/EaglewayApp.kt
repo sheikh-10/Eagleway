@@ -50,6 +50,7 @@ fun EaglewayApp(modifier: Modifier = Modifier,
 
     val navController = rememberNavController()
 
+    viewModel.getTimerValueFromDb(LocalContext.current)
     viewModel.timer(LocalContext.current)
     viewModel.readUserInfoFromDatabase(LocalContext.current)
 
@@ -71,12 +72,13 @@ fun EaglewayApp(modifier: Modifier = Modifier,
                 ProductScreen(viewModel = viewModel)
             }
             composable(BottomNavItem.ManageScreen.screenRoute) {
-                ManageScreen(onLogout = {
+                ManageScreen(
+                    onLogout = {
                     viewModel.logout()
                     activity?.finish()
-                    RegistrationActivity.startActivity(activity)
-                },
-                viewModel = viewModel
+                    RegistrationActivity.startActivity(activity) },
+                    viewModel = viewModel,
+                    activity = activity
                     )
             }
         }

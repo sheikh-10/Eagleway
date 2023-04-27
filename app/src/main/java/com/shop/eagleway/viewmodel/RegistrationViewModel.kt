@@ -20,6 +20,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.shop.eagleway.R
+import com.shop.eagleway.request.User
+import com.shop.eagleway.request.UserPhoneNumber
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "RegistrationViewModel"
@@ -191,7 +194,7 @@ class RegistrationViewModel: ViewModel(), Registration {
     }
 
     private fun storeNumToLocalDb(context: Context) {
-        context.getSharedPreferences("userNum", Context.MODE_PRIVATE).apply {
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).apply {
             edit().putString("num", userPhoneInput).apply()
         }
     }
@@ -203,11 +206,4 @@ interface Registration {
 
     fun checkOTPSignup(onNextScreenNewUser: () -> Unit)
     fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context)
-}
-
-data class UserPhoneNumber(val num: String?)
-
-data class User(val userNum: String? = null, val userInfo: UserInfo? = null) {
-    data class UserInfo(val userName: String? = null,
-                        val businessName: String? = null)
 }

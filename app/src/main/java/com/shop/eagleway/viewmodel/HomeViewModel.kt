@@ -23,6 +23,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.shop.eagleway.R
+import com.shop.eagleway.request.User
+import com.shop.eagleway.utility.log
+import com.shop.eagleway.utility.toast
 
 private const val TAG = "HomeViewModel"
 class HomeViewModel: ViewModel() {
@@ -41,19 +45,34 @@ class HomeViewModel: ViewModel() {
     var userNum by mutableStateOf("")
         private set
 
+    var userLanguage by mutableStateOf("")
+        private set
+
+    var userEmail by mutableStateOf("")
+        private set
+
+    var indexKey by mutableStateOf("")
+        private set
+
     var timeData by mutableStateOf(0L)
         private set
 
-    fun updateUserInfo(user: String) { userName = user }
+    private var timerValue: Int = 0
+
+    fun updateUserName(user: String) { userName = user }
 
     fun updateBusinessInfo(business: String) { businessName = business }
+
+    fun updateLanguage(language: String) { userLanguage = language }
+
+    fun updateEmail(email: String) { userEmail = email }
 
     fun logout() { auth.signOut() }
 
     fun readUserInfoFromDatabase(context: Context) {
         val ref = database.getReference("usersInfo")
 
-        context.getSharedPreferences("userNum", Context.MODE_PRIVATE).apply {
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).apply {
             userNum = getString("num", "") ?: ""
         }
 
@@ -61,8 +80,14 @@ class HomeViewModel: ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 snapshot.children.forEach {  data ->
+
+                    data.key?.let { indexKey = it }
+
                     data.getValue(User::class.java)?.apply {
                         userInfo?.businessName?.let { businessName = it }
+                        userInfo?.userName?.let { userName = it }
+                        userInfo?.language?.let { userLanguage = it }
+                        userInfo?.email?.let { userEmail = it }
                     }
                 }
             }
@@ -71,8 +96,19 @@ class HomeViewModel: ViewModel() {
         })
     }
 
+    fun updateUserNameToDatabase() {
+        Log.d(TAG, "Clicked")
+        val ref = database.getReference("usersInfo").child(indexKey)
+
+        ref.setValue(User(userNum, User.UserInfo(userName = userName, businessName = businessName, language = userLanguage, email = userEmail)))
+    }
+
     fun timer(context: Context) {
-        val millisInFuture: Long = 40 * 1000
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).apply {
+            timerValue = getInt("timer_value", 40)
+        }
+
+        val millisInFuture: Long = timerValue.toLong() * 1000
 
         timeData = millisInFuture
 
@@ -133,6 +169,26 @@ class HomeViewModel: ViewModel() {
     private fun removeInterstitial() {
         mInterstitialAd?.fullScreenContentCallback = null
         mInterstitialAd = null
+    }
+
+    fun getTimerValueFromDb(context: Context) {
+        val ref = database.getReference("eaglewayConfig")
+
+        ref.addListenerForSingleValueEvent(object :ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    storeTimerValueToLocalDb(context, it.getValue(Int::class.java) ?: 40)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun storeTimerValueToLocalDb(context: Context, timerValue: Int) {
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).apply {
+            edit().putInt("timer_value", timerValue).apply()
+        }
     }
 
     override fun onCleared() {

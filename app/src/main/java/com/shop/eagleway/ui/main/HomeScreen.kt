@@ -94,10 +94,27 @@ fun HomeScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.weight(1f))
 
-                FloatingActionButton(onClick = { }, modifier = modifier.size(40.dp)) {
-//                    Timer { showInterstitialAd() }
-//                    Text(text = "40", fontSize = 16.sp)
-                    Text(text = (viewModel.timeData / 1000).toInt().toString())
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = modifier.size(40.dp),
+                    backgroundColor = colorResource(id = R.color.light_pink)
+                    ) {
+
+                    Text(
+                        text = (viewModel.timeData / 1000).toInt().toString(),
+                        color = when ((viewModel.timeData /1000).toInt()) {
+                            9 -> Color.Red
+                            8 -> Color.White
+                            7 -> Color.Red
+                            6 -> Color.White
+                            5 -> Color.Red
+                            4 -> Color.White
+                            3 -> Color.Red
+                            2 -> Color.White
+                            1 -> Color.Red
+                            else -> Color.White
+                        }
+                        )
                 }
 
                 Spacer(modifier = modifier.width(10.dp))
