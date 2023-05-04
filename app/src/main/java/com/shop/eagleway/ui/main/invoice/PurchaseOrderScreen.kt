@@ -50,16 +50,8 @@ fun PurchaseOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun PurchaseOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        PurchaseOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun PurchaseOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun PurchaseOrderScreenPreview() {
+    EaglewayTheme {
         PurchaseOrderScreen()
     }
 }

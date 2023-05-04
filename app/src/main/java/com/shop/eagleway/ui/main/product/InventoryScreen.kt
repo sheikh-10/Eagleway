@@ -41,16 +41,8 @@ fun InventoryScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun InventoryScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        InventoryScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun InventoryScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun InventoryScreenPreview() {
+    EaglewayTheme {
         InventoryScreen()
     }
 }

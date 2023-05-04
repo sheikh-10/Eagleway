@@ -36,16 +36,8 @@ fun UpgradeScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun UpgradeScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        UpgradeScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun NotificationScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun UpgradeScreenPreview() {
+    EaglewayTheme {
         UpgradeScreen()
     }
 }

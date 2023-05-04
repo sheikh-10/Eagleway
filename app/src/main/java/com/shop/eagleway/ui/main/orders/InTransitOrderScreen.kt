@@ -22,16 +22,8 @@ fun InTransitOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun InTransitOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        InTransitOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun InTransitOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun InTransitOrderScreenPreview() {
+    EaglewayTheme {
         InTransitOrderScreen()
     }
 }

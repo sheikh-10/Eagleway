@@ -20,16 +20,9 @@ fun InvoiceAllScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun InvoiceAllScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
+private fun InvoiceAllScreenPreview() {
+    EaglewayTheme {
         InvoiceAllScreen()
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun InvoiceAllScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
-        InvoiceAllScreen()
-    }
-}

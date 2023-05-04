@@ -56,16 +56,8 @@ fun EstimatesScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun EstimatesScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        EstimatesScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun EstimatesScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun EstimatesScreenPreview() {
+    EaglewayTheme {
         EstimatesScreen()
     }
 }

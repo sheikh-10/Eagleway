@@ -1,11 +1,13 @@
 package com.shop.eagleway.ui.main
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,81 +31,93 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProductScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel(),) {
-
-    val tabs = listOf(
-        ProductTabItem.Products,
-        ProductTabItem.Inventory,
-        ProductTabItem.Categories,
-    )
-
-    val pageState = rememberPagerState(tabs.indexOf(ProductTabItem.Products))
-
     Column(modifier = modifier.fillMaxSize()) {
+        Card {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+                Spacer(modifier = modifier.width(10.dp))
+                Text(text = "Products", fontSize = 18.sp)
 
-            Spacer(modifier = modifier.width(10.dp))
+                Spacer(modifier = modifier.weight(1f))
 
-            Text(text = "Products", fontSize = 18.sp)
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = modifier.size(40.dp),
+                    backgroundColor = colorResource(id = R.color.light_pink)
+                ) {
 
-            Spacer(modifier = modifier.weight(1f))
+                    Text(
+                        text = (viewModel.timeData / 1000).toInt().toString(),
+                        color = when ((viewModel.timeData / 1000).toInt()) {
+                            9 -> Color.Red
+                            8 -> Color.White
+                            7 -> Color.Red
+                            6 -> Color.White
+                            5 -> Color.Red
+                            4 -> Color.White
+                            3 -> Color.Red
+                            2 -> Color.White
+                            1 -> Color.Red
+                            else -> Color.White
+                        }
+                    )
+                }
 
-            Spacer(modifier = modifier.weight(1f))
+                Spacer(modifier = modifier.width(10.dp))
 
-            FloatingActionButton(
-                onClick = { },
-                modifier = modifier.size(40.dp),
-                backgroundColor = colorResource(id = R.color.light_pink)) {
-                Text(
-                    text = (viewModel.timeData / 1000).toInt().toString(),
-                    color = when ((viewModel.timeData /1000).toInt()) {
-                        9 -> Color.Red
-                        8 -> Color.White
-                        7 -> Color.Red
-                        6 -> Color.White
-                        5 -> Color.Red
-                        4 -> Color.White
-                        3 -> Color.Red
-                        2 -> Color.White
-                        1 -> Color.Red
-                        else -> Color.White
-                    }
-                )
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = stringResource(R.string.search)
+                    )
+                }
             }
-            Spacer(modifier = modifier.width(10.dp))
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Outlined.Search,
-                    contentDescription = stringResource(R.string.search)
-                )
-            }
         }
 
 
-        /**
-         * Product Pager
-         **/
-        Tabs(tabs = tabs, pagerState = pageState)
+        Box(modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = 50.dp)) {
 
-        Box(modifier = modifier.padding(bottom = 50.dp)) {
+            Column(modifier = modifier.padding(16.dp)) {
 
-            TabsContent(tabs = tabs, pagerState = pageState)
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = {},
+                    label = {
+                        Text(text = "Search by name or brand")
+                    },
+                    trailingIcon = {
+                        Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+                    },
+                    modifier = modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = "You haven't added any product. Add product and then start sharing them or create them or create orders for customers",
+                    modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
 
             FloatingActionButton(
                 onClick = {},
                 modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.BottomEnd)
-                    .padding(30.dp)
+                    .padding(30.dp),
+                backgroundColor = colorResource(id = R.color.light_pink)
             ) {
-                Row(modifier = modifier.padding(horizontal = 20.dp),verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
-                    Spacer(modifier = modifier.width(10.dp))
-                    Text(text = "PRODUCT")
-                }
+                Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
             }
         }
     }
@@ -147,16 +162,8 @@ private fun TabsContent(tabs: List<ProductTabItem>, pagerState: PagerState) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ProductScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ProductScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun ProductScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ProductScreenPreview() {
+    EaglewayTheme {
         ProductScreen()
     }
 }

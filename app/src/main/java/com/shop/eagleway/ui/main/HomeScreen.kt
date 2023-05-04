@@ -377,16 +377,8 @@ private fun GrowBusinessCardDarkThemePreview() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun HomeScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        HomeScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun HomeScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun HomeScreenPreview() {
+    EaglewayTheme {
         HomeScreen()
     }
 }

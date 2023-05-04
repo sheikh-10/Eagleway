@@ -22,16 +22,8 @@ fun ConfirmedOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ConfirmedOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ConfirmedOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ConfirmedOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ConfirmedOrderScreenPreview() {
+    EaglewayTheme {
         ConfirmedOrderScreen()
     }
 }

@@ -22,16 +22,8 @@ fun ShipmentReadyOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ShipmentReadyOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ShipmentReadyOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ShipmentReadyOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ShipmentReadyOrderScreenPreview() {
+    EaglewayTheme {
         ShipmentReadyOrderScreen()
     }
 }

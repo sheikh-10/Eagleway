@@ -154,13 +154,10 @@ fun InvoiceScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = view
                 modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.BottomEnd)
-                    .padding(30.dp)
-                ) {
-                Row(modifier = modifier.padding(horizontal = 20.dp),verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
-                    Spacer(modifier = modifier.width(10.dp))
-                    Text(text = "INVOICE")
-                }
+                    .padding(30.dp),
+                backgroundColor = colorResource(id = R.color.light_pink)
+            ) {
+                Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
             }
         }
     }
@@ -204,16 +201,8 @@ private fun TabsContent(tabs: List<InvoiceTabItem>, pagerState: PagerState) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun InvoiceScreenLightScreenPreview() {
-    EaglewayTheme(darkTheme = false) {
-        InvoiceScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun InvoiceScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun InvoiceScreenPreview() {
+    EaglewayTheme {
         InvoiceScreen()
     }
 }

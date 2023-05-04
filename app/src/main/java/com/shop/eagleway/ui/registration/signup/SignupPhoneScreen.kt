@@ -134,15 +134,7 @@ fun SignupPhoneScreen(modifier: Modifier = Modifier,
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun SignupPhoneScreenLightScreenPreview() {
-    EaglewayTheme(darkTheme = false) {
-        SignupPhoneScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SignupPhoneScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+    EaglewayTheme {
         SignupPhoneScreen()
     }
 }

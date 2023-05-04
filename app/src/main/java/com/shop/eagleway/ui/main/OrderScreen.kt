@@ -87,7 +87,6 @@ fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
                     contentDescription = stringResource(R.string.search)
                 )
             }
-
         }
 
         /**
@@ -103,13 +102,10 @@ fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
                 modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.BottomEnd)
-                    .padding(30.dp)
+                    .padding(30.dp),
+                backgroundColor = colorResource(id = R.color.light_pink)
             ) {
-                Row(modifier = modifier.padding(horizontal = 20.dp),verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
-                    Spacer(modifier = modifier.width(10.dp))
-                    Text(text = "ORDER")
-                }
+                Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
             }
         }
     }

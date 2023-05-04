@@ -22,16 +22,8 @@ fun ReturnsOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ReturnsOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ReturnsOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ReturnsOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ReturnsOrderScreenPreview() {
+    EaglewayTheme {
         ReturnsOrderScreen()
     }
 }

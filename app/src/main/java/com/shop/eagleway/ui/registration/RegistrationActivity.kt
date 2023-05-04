@@ -26,7 +26,8 @@ class RegistrationActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EaglewayTheme {
-                RegistrationApp(activity = this@RegistrationActivity)
+//                RegistrationApp(activity = this@RegistrationActivity)
+                RegisterScreen(activity = this@RegistrationActivity)
             }
         }
 

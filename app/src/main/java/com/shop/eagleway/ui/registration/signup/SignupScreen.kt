@@ -97,16 +97,8 @@ fun SignupScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun SignupScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        SignupScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SignupScreenDarkTheme() {
-    EaglewayTheme(darkTheme = true) {
+private fun SignupScreenPreview() {
+    EaglewayTheme {
         SignupScreen()
     }
 }

@@ -41,16 +41,8 @@ fun CategoriesScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun CategoriesScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        CategoriesScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun CategoriesScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun CategoriesScreenPreview() {
+    EaglewayTheme {
         CategoriesScreen()
     }
 }

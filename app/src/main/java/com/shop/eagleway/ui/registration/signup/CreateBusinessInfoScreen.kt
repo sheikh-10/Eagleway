@@ -88,16 +88,8 @@ fun CreateBusinessInfoScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun CreateBusinessInfoScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        CreateBusinessInfoScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun CreateBusinessInfoScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun CreateBusinessInfoScreenPreview() {
+    EaglewayTheme {
         CreateBusinessInfoScreen()
     }
 }

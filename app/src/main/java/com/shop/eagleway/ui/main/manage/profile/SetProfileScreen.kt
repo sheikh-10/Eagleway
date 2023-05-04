@@ -90,16 +90,8 @@ fun SetProfileScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun SetProfileScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        SetProfileScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SetProfileScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun SetProfileScreenPreview() {
+    EaglewayTheme {
         SetProfileScreen()
     }
 }

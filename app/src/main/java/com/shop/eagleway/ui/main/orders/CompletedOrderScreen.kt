@@ -22,16 +22,8 @@ fun CompletedOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun CompletedOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        CompletedOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun CompletedOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun CompletedOrderScreenPreview() {
+    EaglewayTheme {
         CompletedOrderScreen()
     }
 }

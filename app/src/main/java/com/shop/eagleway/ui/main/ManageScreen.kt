@@ -243,16 +243,8 @@ private fun StoreDetailsCardDarkThemePreview() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ManageScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ManageScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun ManageScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ManageScreenPreview() {
+    EaglewayTheme {
         ManageScreen()
     }
 }

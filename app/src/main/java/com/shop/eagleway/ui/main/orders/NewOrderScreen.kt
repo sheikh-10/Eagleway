@@ -22,16 +22,8 @@ fun NewOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun NewOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        NewOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun NewOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun NewOrderScreenPreview() {
+    EaglewayTheme {
         NewOrderScreen()
     }
 }

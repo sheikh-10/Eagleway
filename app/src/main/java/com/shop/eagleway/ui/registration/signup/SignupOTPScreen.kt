@@ -131,16 +131,8 @@ fun SignupOTPScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun SignupOTPScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        SignupOTPScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SignupOTPScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun SignupOTPScreenPreview() {
+    EaglewayTheme {
         SignupOTPScreen()
     }
 }

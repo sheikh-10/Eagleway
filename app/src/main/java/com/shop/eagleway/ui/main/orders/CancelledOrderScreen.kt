@@ -22,16 +22,8 @@ fun CancelledOrderScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun CancelledOrderScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        CancelledOrderScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun CancelledOrderScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun CancelledOrderScreenPreview() {
+    EaglewayTheme {
         CancelledOrderScreen()
     }
 }

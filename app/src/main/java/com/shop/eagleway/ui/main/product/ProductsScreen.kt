@@ -41,16 +41,8 @@ fun ProductsScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun ProductsScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        ProductsScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ProductsScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun ProductsScreenPreview() {
+    EaglewayTheme {
         ProductsScreen()
     }
 }

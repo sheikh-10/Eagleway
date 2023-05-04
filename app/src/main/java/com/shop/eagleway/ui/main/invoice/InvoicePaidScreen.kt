@@ -22,16 +22,8 @@ fun InvoicePaidScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun InvoicePaidScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        InvoicePaidScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun InvoicePaidScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun InvoicePaidScreenPreview() {
+    EaglewayTheme {
         InvoicePaidScreen()
     }
 }

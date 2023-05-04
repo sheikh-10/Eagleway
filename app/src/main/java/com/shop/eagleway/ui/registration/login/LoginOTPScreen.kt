@@ -128,16 +128,8 @@ fun LoginOTPScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun LoginOTPScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        LoginOTPScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun LoginOTPDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun LoginOTPScreenPreview() {
+    EaglewayTheme {
         LoginOTPScreen()
     }
 }

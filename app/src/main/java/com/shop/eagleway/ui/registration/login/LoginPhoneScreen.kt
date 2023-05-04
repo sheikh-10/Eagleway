@@ -113,16 +113,8 @@ fun LoginPhoneScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun LoginScreenLightThemePreview() {
-    EaglewayTheme(darkTheme = false) {
-        LoginPhoneScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun LoginScreenDarkThemePreview() {
-    EaglewayTheme(darkTheme = true) {
+private fun LoginScreenPreview() {
+    EaglewayTheme {
         LoginPhoneScreen()
     }
 }

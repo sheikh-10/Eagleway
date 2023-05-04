@@ -21,4 +21,8 @@
     <color name="light_lime">#FFDCE775</color>
     <color name="light_amber">#FFFFD54F</color>
     <color name="light_orange">#FFFF8A65</color>
+
+    <color name="purple_1">#FF373872</color>
+    <color name="purple_2">#FF353771</color>
+    <color name="purple_3">#FFe6e7f0</color>
 </resources>
