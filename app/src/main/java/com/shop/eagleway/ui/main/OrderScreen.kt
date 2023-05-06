@@ -62,7 +62,7 @@ fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
             FloatingActionButton(
                 onClick = { },
                 modifier = modifier.size(40.dp),
-                backgroundColor = colorResource(id = R.color.light_pink)) {
+                backgroundColor = colorResource(id = R.color.purple_1)) {
                 Text(
                     text = (viewModel.timeData / 1000).toInt().toString(),
                     color = when ((viewModel.timeData /1000).toInt()) {
@@ -103,9 +103,11 @@ fun OrderScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMo
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.BottomEnd)
                     .padding(30.dp),
-                backgroundColor = colorResource(id = R.color.light_pink)
+                backgroundColor = colorResource(id = R.color.purple_1)
             ) {
-                Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
+                Icon(imageVector = Icons.Outlined.Add,
+                    contentDescription = "Add",
+                    tint = Color.White)
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.shop.eagleway.ui.registration
 
 import android.app.Activity
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -17,9 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,30 +26,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.HomeActivity
-import com.shop.eagleway.utility.toast
 import com.shop.eagleway.viewmodel.RegistrationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,7 +50,7 @@ import kotlinx.coroutines.launch
 private const val TAG = "RegisterScreen"
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier, viewModel: RegistrationViewModel = viewModel(), activity: Activity? = null) {
+fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel = viewModel(), activity: Activity? = null) {
 
     var isFinished by remember { mutableStateOf(true) }
     var screenState: RegistrationStates by remember { mutableStateOf(RegistrationStates.ShowEmpty) }
@@ -901,7 +889,7 @@ private fun LoginSheet(modifier: Modifier = Modifier,
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun RegisterScreenPreview() {
-    RegisterScreen()
+    RegisterApp()
 }
 
 enum class RegistrationStates {

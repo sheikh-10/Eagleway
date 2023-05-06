@@ -97,7 +97,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
                 FloatingActionButton(
                     onClick = { },
                     modifier = modifier.size(40.dp),
-                    backgroundColor = colorResource(id = R.color.light_pink)
+                    backgroundColor = colorResource(id = R.color.purple_1)
                     ) {
 
                     Text(
@@ -168,15 +168,19 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             }
                         }
 
-                        LazyVerticalGrid(columns = GridCells.Fixed(2),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = modifier.height(200.dp)
-                        ) {
+                        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[0])
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[1])
+                        }
 
-                            items(homeCardDataList) { homeCardData ->
-                                HomeCard(homeCardData = homeCardData)
-                            }
+                        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[2])
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[3])
+                        }
+
+                        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[4])
+                            HomeCard(modifier = modifier.weight(1f), homeCardData = homeCardDataList[5])
                         }
                     }
                 }
@@ -190,13 +194,17 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             Text(text = "Manage your business with different shortcuts", fontSize = 12.sp)
                         }
 
-                        LazyVerticalGrid(columns = GridCells.Fixed(4),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = modifier.height(180.dp)) {
-                            items(manageBusinessDataList) { manageBusinessData ->
-                                ManageBusinessCard(manageBusiness = manageBusinessData)
-                            }
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            ManageBusinessCard(modifier = modifier.weight(1f), manageBusiness = manageBusinessDataList[0])
+                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[1])
+                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[2])
+                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[3])
+                        }
+
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            ManageBusinessCard(modifier = modifier.weight(1f), manageBusiness = manageBusinessDataList[4])
+                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[5])
+                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[6])
                         }
                     }
                 }
@@ -210,13 +218,18 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             Text(text = "Grow Business with Online website, Social Selling", fontSize = 12.sp)
                         }
 
-                        LazyVerticalGrid(columns = GridCells.Fixed(4),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = modifier.height(200.dp)) {
-                            items(growBusinessDataList) { growBusinessData ->
-                                GrowBusinessCard(growBusiness = growBusinessData)
-                            }
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[0])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[1])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[2])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[3])
+                        }
+
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[4])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[5])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[6])
+                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[7])
                         }
                     }
                 }
@@ -257,12 +270,12 @@ private data class HomeCardData(
 private fun HomeCard(modifier: Modifier = Modifier,
                      homeCardData: HomeCardData = HomeCardData(name = "Sale", value = 0, iconRes = R.drawable.ic_sale, bgColor = R.color.light_blue)
 ) {
-    Card(elevation = 4.dp, shape = RoundedCornerShape(10)) {
-        Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Card(modifier = modifier, elevation = 4.dp, shape = RoundedCornerShape(10)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
 
             IconButton(
                 onClick = {},
-                modifier = modifier
+                modifier = Modifier
                     .padding(5.dp)
                     .clip(RoundedCornerShape(20))
                     .background(color = colorResource(id = homeCardData.bgColor))) {
@@ -274,7 +287,7 @@ private fun HomeCard(modifier: Modifier = Modifier,
                         )
                     }
 
-            Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "${homeCardData.value}", fontSize = 18.sp)
                 Text(text = homeCardData.name, fontSize = 14.sp)
             }
@@ -294,16 +307,16 @@ private data class ManageBusiness(
 @Composable
 private fun ManageBusinessCard(modifier: Modifier = Modifier,
                                manageBusiness: ManageBusiness = ManageBusiness("Customers", R.drawable.ic_customers, bgColor = R.color.light_lime) ) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         IconButton(
             onClick = {},
-            modifier = modifier
+            modifier = Modifier
                 .padding(5.dp)
                 .clip(RoundedCornerShape(20))
                 .background(color = colorResource(id = manageBusiness.bgColor))) {
             Icon(painter = painterResource(manageBusiness.iconRes),
                 contentDescription = null,
-                modifier = modifier.size(30.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
 
@@ -323,16 +336,16 @@ private data class GrowBusiness(
 @Composable
 private fun GrowBusinessCard(modifier: Modifier = Modifier,
                                growBusiness: GrowBusiness = GrowBusiness("Customers", R.drawable.ic_collections, bgColor = R.color.light_blue) ) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         IconButton(
             onClick = {},
-            modifier = modifier
+            modifier = Modifier
                 .padding(5.dp)
                 .clip(RoundedCornerShape(20))
                 .background(color = colorResource(id = growBusiness.bgColor))) {
             Icon(painter = painterResource(growBusiness.iconRes),
                 contentDescription = null,
-                modifier = modifier.size(30.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
         Text(text = growBusiness.name, fontSize = 12.sp)

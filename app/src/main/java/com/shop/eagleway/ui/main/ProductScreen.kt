@@ -49,7 +49,7 @@ fun ProductScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = view
                 FloatingActionButton(
                     onClick = { },
                     modifier = modifier.size(40.dp),
-                    backgroundColor = colorResource(id = R.color.light_pink)
+                    backgroundColor = colorResource(id = R.color.purple_1)
                 ) {
 
                     Text(
@@ -78,7 +78,6 @@ fun ProductScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = view
                     )
                 }
             }
-
         }
 
 
@@ -115,9 +114,11 @@ fun ProductScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = view
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.BottomEnd)
                     .padding(30.dp),
-                backgroundColor = colorResource(id = R.color.light_pink)
+                backgroundColor = colorResource(id = R.color.purple_1)
             ) {
-                Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add")
+                Icon(imageVector = Icons.Outlined.Add,
+                    contentDescription = "Add",
+                    tint = Color.White)
             }
         }
     }
