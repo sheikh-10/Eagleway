@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -43,6 +44,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.HomeActivity
+import com.shop.eagleway.viewmodel.LoadingState
 import com.shop.eagleway.viewmodel.RegistrationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +52,9 @@ import kotlinx.coroutines.launch
 private const val TAG = "RegisterScreen"
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel = viewModel(), activity: Activity? = null) {
+fun RegisterApp(modifier: Modifier = Modifier,
+                viewModel: RegistrationViewModel = viewModel(),
+                activity: Activity? = null) {
 
     var isFinished by remember { mutableStateOf(true) }
     var screenState: RegistrationStates by remember { mutableStateOf(RegistrationStates.ShowEmpty) }
@@ -58,6 +62,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
     var isChecked by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    var image by remember { mutableStateOf(R.drawable.slide_image_pic1) }
 
     val modifierOne = modifier
         .background(
@@ -70,10 +76,13 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
         )
         .fillMaxSize()
         .wrapContentSize(align = Alignment.Center)
-        .clickable(onClick = {
-            viewModel.resetUserInput()
-            screenState = RegistrationStates.ShowNews
-        })
+        .clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+            onClick = {
+                viewModel.resetUserInput()
+                screenState = RegistrationStates.ShowNews
+            })
 
     val modifierTwo = modifier
         .background(
@@ -87,10 +96,13 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
         .fillMaxSize()
         .wrapContentWidth(align = Alignment.CenterHorizontally)
         .padding(top = 48.dp)
-        .clickable(onClick = {
-            viewModel.resetUserInput()
-            screenState = RegistrationStates.ShowNews
-        })
+        .clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+            onClick = {
+                viewModel.resetUserInput()
+                screenState = RegistrationStates.ShowNews
+            })
 
 
     Box {
@@ -124,7 +136,7 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
             Spacer(modifier = modifier.height(40.dp))
 
             if (!isFinished) {
-                Image(painter = painterResource(id = R.drawable.slide_image_pic1),
+                Image(painter = painterResource(id = image),
                     contentDescription = null,
                     modifier = modifier
                         .fillMaxWidth()
@@ -175,20 +187,31 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
 
                             HorizontalPager(count = 3, state = pagerState) {
                                 when (it) {
-                                    0 -> PagerContentOne(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)) { pagerState.animateScrollToPage(1) }
+                                    0 -> {
+                                        image = R.drawable.slide_image_pic1
+
+                                        PagerContentOne(modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)) { pagerState.animateScrollToPage(1) }
+                                    }
+
+                                    1 -> {
+                                        image = R.drawable.slide_image_pic1
+
+                                        PagerContentTwo(modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)) { pagerState.animateScrollToPage(2) }
+                                    }
 
 
-                                    1 -> PagerContentTwo(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)) { pagerState.animateScrollToPage(2) }
+                                    2 -> {
+                                        image = R.drawable.slide_image_pic1
 
-
-                                    2 -> PagerContentThree(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)) {
-                                        screenState = RegistrationStates.ShowRegister
+                                        PagerContentThree(modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)) {
+                                            screenState = RegistrationStates.ShowRegister
+                                        }
                                     }
                                 }
                             }
@@ -214,7 +237,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
                                 onPhoneNumberInput = { viewModel.updatePhoneNumber(it) },
                                 countryCode = viewModel.userCountryCodeInput,
                                 onCountryCodeInput = { viewModel.updateCountryCode(it) },
-                                isUserSignedIn = viewModel.isSignedInUser
+                                isUserSignedIn = viewModel.isSignedInUser,
+                                loadingState = viewModel.state
                                 )
                         }
                         RegistrationStates.ShowLogin -> {
@@ -236,7 +260,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
                                 onPhoneNumberInput = { viewModel.updatePhoneNumber(it) },
                                 countryCode = viewModel.userCountryCodeInput,
                                 onCountryCodeInput = { viewModel.updateCountryCode(it) },
-                                isUserSignedIn = viewModel.isSignedInUser
+                                isUserSignedIn = viewModel.isSignedInUser,
+                                loadingState = viewModel.state
                                 )
                         }
                         RegistrationStates.ShowRegisterOTP -> { OTPSignupSheet(
@@ -246,7 +271,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
                                 viewModel.checkOTPSignup {
                                     screenState = RegistrationStates.ShowBusinessInfo
                                 }
-                            }
+                            },
+                            loadingState = viewModel.state
                         ) }
                         RegistrationStates.ShowLoginOTP -> { OTPLoginSheet(
                             smsCode = viewModel.smsCode,
@@ -258,7 +284,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
                                         HomeActivity.startActivity(activity)
                                     },
                                     context = context)
-                            }
+                            },
+                            loadingState = viewModel.state
                         ) }
                         else -> {
                            BusinessInfoSheet(
@@ -270,7 +297,8 @@ fun RegisterApp(modifier: Modifier = Modifier, viewModel: RegistrationViewModel 
                                userName = viewModel.userName,
                                businessName = viewModel.businessName,
                                onUserNameInput = { viewModel.updateUserInfo(it) },
-                               onBusinessNameInput = { viewModel.updateBusinessInfo(it) }
+                               onBusinessNameInput = { viewModel.updateBusinessInfo(it) },
+                               loadingState = viewModel.state
                            )
                         }
 //                        else -> {  }
@@ -418,7 +446,9 @@ private fun BusinessInfoSheet(modifier: Modifier = Modifier,
                               userName: String = "",
                               businessName: String = "",
                               onUserNameInput: (String) -> Unit = {},
-                              onBusinessNameInput: (String) -> Unit = {}) {
+                              onBusinessNameInput: (String) -> Unit = {}, 
+                              loadingState: LoadingState = LoadingState.False
+                              ) {
     val focusManager = LocalFocusManager.current
 
     Column(modifier = modifier.padding(16.dp)) {
@@ -480,7 +510,16 @@ private fun BusinessInfoSheet(modifier: Modifier = Modifier,
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
             enabled = true
         ) {
-            Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+            if (loadingState == LoadingState.True)  {
+                CircularProgressIndicator(
+                    modifier = modifier.size(32.dp),
+                    color = Color.LightGray,
+                    strokeWidth = 2.dp
+                )
+
+            } else {
+                Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+            }
         }
 
         Spacer(modifier = modifier.height(20.dp))
@@ -492,7 +531,8 @@ private fun BusinessInfoSheet(modifier: Modifier = Modifier,
 private fun OTPSignupSheet(modifier: Modifier = Modifier,
                      smsCode: String = "",
                      onSmsCodeInput: (String) -> Unit = {},
-                     onContinueClick: () -> Unit = {}) {
+                     onContinueClick: () -> Unit = {},
+                     loadingState: LoadingState = LoadingState.False) {
 
     val focusManager = LocalFocusManager.current
     var isChecked by remember { mutableStateOf(false) }
@@ -570,7 +610,18 @@ private fun OTPSignupSheet(modifier: Modifier = Modifier,
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
             enabled = isChecked
         ) {
-            Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+
+            if (loadingState == LoadingState.True)  {
+                CircularProgressIndicator(
+                    modifier = modifier.size(32.dp),
+                    color = Color.LightGray,
+                    strokeWidth = 2.dp
+                )
+
+            } else {
+                Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+            }
+
         }
 
         Spacer(modifier = modifier.height(20.dp))
@@ -590,7 +641,9 @@ private fun SignUpSheet(modifier: Modifier = Modifier,
                         onPhoneNumberInput: (String) -> Unit = {},
                         countryCode: String = "",
                         onCountryCodeInput: (String) -> Unit = {},
-                        isUserSignedIn: Boolean = false) {
+                        isUserSignedIn: Boolean = false,
+                        loadingState: LoadingState = LoadingState.False
+                        ) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -670,7 +723,17 @@ private fun SignUpSheet(modifier: Modifier = Modifier,
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
             enabled = isChecked
         ) {
-            Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+
+            if (loadingState == LoadingState.True)  {
+                CircularProgressIndicator(
+                    modifier = modifier.size(32.dp),
+                    color = Color.LightGray,
+                    strokeWidth = 2.dp
+                )
+
+            } else {
+                Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+            }
         }
 
         Spacer(modifier = modifier.height(20.dp))
@@ -700,7 +763,8 @@ private fun SignUpSheet(modifier: Modifier = Modifier,
 private fun OTPLoginSheet(modifier: Modifier = Modifier,
                            smsCode: String = "",
                            onSmsCodeInput: (String) -> Unit = {},
-                           onContinueClick: () -> Unit = {}) {
+                           onContinueClick: () -> Unit = {},
+                            loadingState: LoadingState = LoadingState.True) {
 
     val focusManager = LocalFocusManager.current
     var isChecked by remember { mutableStateOf(false) }
@@ -778,7 +842,17 @@ private fun OTPLoginSheet(modifier: Modifier = Modifier,
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
             enabled = isChecked
         ) {
+
+            if (loadingState == LoadingState.True)  {
+            CircularProgressIndicator(
+                modifier = modifier.size(32.dp),
+                color = Color.LightGray,
+                strokeWidth = 2.dp
+            )
+
+        } else {
             Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+        }
         }
 
         Spacer(modifier = modifier.height(20.dp))
@@ -795,7 +869,9 @@ private fun LoginSheet(modifier: Modifier = Modifier,
                        onPhoneNumberInput: (String) -> Unit = {},
                        countryCode: String = "",
                        onCountryCodeInput: (String) -> Unit = {},
-                       isUserSignedIn: Boolean = false) {
+                       isUserSignedIn: Boolean = false,
+                        loadingState: LoadingState = LoadingState.True
+                       ) {
 
     val focusManager = LocalFocusManager.current
 
@@ -862,7 +938,16 @@ private fun LoginSheet(modifier: Modifier = Modifier,
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
             enabled = true
         ) {
-            Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+
+            if (loadingState == LoadingState.True)  {
+                CircularProgressIndicator(
+                    modifier = modifier.size(32.dp),
+                    color = Color.LightGray,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(text = "Continue", fontSize = 20.sp, color = Color.White)
+            }
         }
 
         Spacer(modifier = modifier.height(20.dp))

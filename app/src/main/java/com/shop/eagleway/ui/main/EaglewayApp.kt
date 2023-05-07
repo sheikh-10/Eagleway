@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -157,7 +158,7 @@ fun BottomNavigation(navController: NavController) {
             items.forEach { item ->
                 BottomNavigationItem(
                     icon = { Icon(painter = painterResource(id = item.icon), contentDescription = item.title, modifier = Modifier.size(24.dp)) },
-                    label = { Text(text = item.title, fontSize = 12.sp) },
+                    label = { Text(text = item.title, fontSize = 12.sp, textAlign = TextAlign.Justify) },
                     selectedContentColor = Color.Yellow,
                     unselectedContentColor = Color.White.copy(0.5f),
                     alwaysShowLabel = true,

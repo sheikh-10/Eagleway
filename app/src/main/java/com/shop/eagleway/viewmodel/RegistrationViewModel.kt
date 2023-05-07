@@ -52,6 +52,8 @@ class RegistrationViewModel: ViewModel(), Registration {
 
     private lateinit var verification: String
 
+    var state by mutableStateOf(LoadingState.False)
+        private set
 
     fun updatePhoneNumber(phoneNumber: String) {
         userPhoneInput = phoneNumber
@@ -92,6 +94,7 @@ class RegistrationViewModel: ViewModel(), Registration {
                 verification = verificationId
                 Log.d(TAG, "Code Sent successfully")
                 onNextScreen()
+                state = LoadingState.False
             }
         }
 
@@ -115,11 +118,16 @@ class RegistrationViewModel: ViewModel(), Registration {
     override fun signup(verifyNumber: () -> Unit) {
         val ref = database.getReference("users")
 
+        state = LoadingState.True
+
         ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null) {
                     Log.i(TAG, "User already signed in")
                     isSignedInUser = true
+
+                    state = LoadingState.False
+
                 } else {
                     Log.i(TAG, "He is a new user")
                     isSignedInUser = false
@@ -134,6 +142,8 @@ class RegistrationViewModel: ViewModel(), Registration {
     override fun login(verifyNumber: () -> Unit) {
         val ref = database.getReference("users")
 
+        state = LoadingState.True
+
         ref.orderByChild("num").equalTo(userPhoneInput).addListenerForSingleValueEvent(object :ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null) {
@@ -143,6 +153,9 @@ class RegistrationViewModel: ViewModel(), Registration {
                 } else {
                     Log.i(TAG, "He is a new user")
                     isSignedInUser = true
+
+                    state = LoadingState.False
+
                 }
             }
 
@@ -153,11 +166,16 @@ class RegistrationViewModel: ViewModel(), Registration {
     override fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context) {
         val credential = PhoneAuthProvider.getCredential(verification, smsCode)
 
+        state = LoadingState.True
+
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
                 storeNumToLocalDb(context)
                 onNextScreenSignedInUser()
                 Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
+
+                state = LoadingState.False
+
             } else {
                 Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
                 if (it.exception is FirebaseAuthInvalidCredentialsException) {
@@ -170,6 +188,8 @@ class RegistrationViewModel: ViewModel(), Registration {
     override fun checkOTPSignup(onNextScreenNewUser: () -> Unit) {
         val credential = PhoneAuthProvider.getCredential(verification, smsCode)
 
+        state = LoadingState.True
+
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
 
@@ -177,6 +197,9 @@ class RegistrationViewModel: ViewModel(), Registration {
                 writeUserEntryToDatabase()
 
                 Log.d(TAG, "signInWithCredential: Success ${it.result?.user}")
+
+                state = LoadingState.False
+
             } else {
                 Log.w(TAG, "signInWithCredential: Failure ${it.exception}")
                 if (it.exception is FirebaseAuthInvalidCredentialsException) {
@@ -188,9 +211,14 @@ class RegistrationViewModel: ViewModel(), Registration {
 
     fun writeUserInfoToDatabase(context: Context) {
         val ref = database.getReference("usersInfo")
+
+        state = LoadingState.True
+
         storeNumToLocalDb(context)
         ref.push().setValue(User(userPhoneInput,
             User.UserInfo(userName = userName, businessName = businessName)))
+
+        state = LoadingState.False
     }
 
     private fun storeNumToLocalDb(context: Context) {
@@ -206,4 +234,8 @@ interface Registration {
 
     fun checkOTPSignup(onNextScreenNewUser: () -> Unit)
     fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context)
+}
+
+enum class LoadingState {
+    True, False
 }
