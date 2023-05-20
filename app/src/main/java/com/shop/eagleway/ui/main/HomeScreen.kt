@@ -270,7 +270,9 @@ private data class HomeCardData(
 private fun HomeCard(modifier: Modifier = Modifier,
                      homeCardData: HomeCardData = HomeCardData(name = "Sale", value = 0, iconRes = R.drawable.ic_sale, bgColor = R.color.light_blue)
 ) {
-    Card(modifier = modifier, elevation = 4.dp, shape = RoundedCornerShape(10)) {
+    Card(modifier = modifier, elevation = 4.dp, shape = RoundedCornerShape(10), backgroundColor = colorResource(
+        id = R.color.purple_3
+    )) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             IconButton(

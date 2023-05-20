@@ -8,9 +8,6 @@ import com.shop.eagleway.ui.main.invoice.InvoiceAllScreen
 import com.shop.eagleway.ui.main.invoice.InvoicePaidScreen
 import com.shop.eagleway.ui.main.invoice.InvoiceUnpaidScreen
 import com.shop.eagleway.ui.main.orders.*
-import com.shop.eagleway.ui.main.product.CategoriesScreen
-import com.shop.eagleway.ui.main.product.InventoryScreen
-import com.shop.eagleway.ui.main.product.ProductsScreen
 
 fun String.toast(context: Context) {
     Toast.makeText(context, this, Toast.LENGTH_LONG).show()
@@ -35,10 +32,4 @@ sealed class OrdersTabItem(var title: String, var screen: ComposableFun) {
     object Completed: OrdersTabItem(title = "Completed", screen = { CompletedOrderScreen() })
     object Returns: OrdersTabItem(title = "Returns", screen = { ReturnsOrderScreen() })
     object Cancelled: OrdersTabItem(title = "Cancelled", screen = { CancelledOrderScreen() })
-}
-
-sealed class ProductTabItem(var title: String, var screen: ComposableFun) {
-    object Products: ProductTabItem(title = "Products", screen = { ProductsScreen() })
-    object Inventory: ProductTabItem(title = "Inventory", screen = { InventoryScreen() })
-    object Categories: ProductTabItem(title = "Categories", screen = { CategoriesScreen() })
 }
