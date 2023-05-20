@@ -42,9 +42,8 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun create(productImage: ProductImage)
 
-    @Query("SELECT * FROM product_data WHERE product_name LIKE :searchText || '%'")
-    fun getProductWithImages(searchText: String): Flow<List<ProductInfoWithImages>>
-
+    @Query("SELECT * FROM product_data")
+    fun getProductWithImages(): Flow<List<ProductInfoWithImages>>
 
     @Query("DELETE FROM product_data WHERE id >= 0")
     suspend fun deleteProductData()

@@ -68,6 +68,8 @@ fun ProductScreen(modifier: Modifier = Modifier,
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = productViewModel.isRefresh)
     val productUiState by productViewModel.productUiState.collectAsState()
 
+    var searchText by remember { mutableStateOf("") }
+
     if (productViewModel.isRefresh) {
         productViewModel.getProductInfo()
     }
@@ -133,8 +135,8 @@ fun ProductScreen(modifier: Modifier = Modifier,
                 Column(modifier = modifier.padding(bottom = 10.dp)) {
 
                     OutlinedTextField(
-                        value = productViewModel.searchText,
-                        onValueChange = { productViewModel.updateSearchText(it) },
+                        value = searchText,
+                        onValueChange = { searchText = it },
                         label = { Text(text = "Search by name or brand") },
                         trailingIcon = {
                             Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
@@ -165,7 +167,9 @@ fun ProductScreen(modifier: Modifier = Modifier,
                     } else {
                         LazyColumn(modifier = modifier.padding(12.dp)) {
                             items(productUiState.product) { product ->
-                                ProductCard(product = product)
+                                if (product.productInfo.productName!!.startsWith(searchText, ignoreCase = true)) {
+                                    ProductCard(product = product)
+                                }
                             }
                         }
                     }

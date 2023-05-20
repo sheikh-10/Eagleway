@@ -24,7 +24,7 @@ interface EaglewayRepository {
 
     suspend fun insertProductImage(productImage: ProductImage)
 
-    fun getProductWithImages(searchText: String): Flow<List<ProductInfoWithImages>>
+    fun getProductWithImages(): Flow<List<ProductInfoWithImages>>
 
     suspend fun deleteProductData()
 }
@@ -51,7 +51,7 @@ class OfflineEaglewayRepository(private val dao: ProductDao): EaglewayRepository
 
     override suspend fun insertProductImage(productImage: ProductImage) = dao.create(productImage)
 
-    override fun getProductWithImages(searchText: String): Flow<List<ProductInfoWithImages>> = dao.getProductWithImages(searchText)
+    override fun getProductWithImages(): Flow<List<ProductInfoWithImages>> = dao.getProductWithImages()
 
     override suspend fun deleteProductData() = dao.deleteProductData()
 }

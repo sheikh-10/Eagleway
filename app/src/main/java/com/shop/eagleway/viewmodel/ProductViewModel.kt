@@ -62,12 +62,6 @@ class ProductViewModel(
     var isRefresh by mutableStateOf(false)
         private set
 
-    var searchText by mutableStateOf("")
-        private set
-    fun updateSearchText(char: String) {
-        searchText = char
-    }
-
     var imageAddError by mutableStateOf(false)
         private set
     fun resetImageAddError() {
@@ -123,7 +117,7 @@ class ProductViewModel(
                 initialValue = AddProductUiState(emptyList())
             )
 
-    val productUiState: StateFlow<ProductUiState> = repository.getProductWithImages(searchText).map {
+    val productUiState: StateFlow<ProductUiState> = repository.getProductWithImages().map {
         ProductUiState(product = it)
     }.stateIn(
         scope = viewModelScope,
@@ -274,10 +268,10 @@ class ProductViewModel(
         }
     }
 
-    fun deleteProductData() = viewModelScope.launch {
+    fun deleteProductData() = viewModelScope.launch { 
         repository.deleteProductData()
     }
-
+    
     fun onRefresh() {
         isRefresh = true
     }
