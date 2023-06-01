@@ -44,7 +44,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.HomeActivity
-import com.shop.eagleway.viewmodel.LoadingState
+import com.shop.eagleway.utility.LoadingState
 import com.shop.eagleway.viewmodel.RegistrationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

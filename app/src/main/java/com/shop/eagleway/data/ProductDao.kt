@@ -15,6 +15,9 @@ interface ProductDao {
     @Query("SELECT * FROM product_preview ORDER BY id DESC ")
     fun read(): Flow<List<ProductPreview>>
 
+//    @Query("SELECT ")
+//    fun read(id: Int): Flow<List<ProductPreview>>
+
     @Update
     suspend fun update(preview: ProductPreview)
 
@@ -45,6 +48,42 @@ interface ProductDao {
     @Query("SELECT * FROM product_data")
     fun getProductWithImages(): Flow<List<ProductInfoWithImages>>
 
+    @Query("SELECT * FROM product_data WHERE id = :id")
+    fun getProductWithImages(id: Int): Flow<ProductInfoWithImages>
+
+    @Query("UPDATE product_data SET product_name = :productName, sales_price = :salesPrice, mrp = :mrp, quantity = :quantity, description = :description WHERE id = :id")
+    suspend fun updateProductData(id: Int, productName: String, salesPrice: Int, mrp: Int, quantity: Int, description: String)
+
     @Query("DELETE FROM product_data WHERE id >= 0")
     suspend fun deleteProductData()
+
+    @Query("DELETE FROM product_image WHERE id >= 0")
+    suspend fun deleteProductImage()
+
+    @Query("DELETE FROM product_data WHERE product_id = :productId")
+    suspend fun deleteProductData(productId: String)
+
+    @Query("DELETE FROM product_image WHERE product_id = :productId")
+    suspend fun deleteProductImage(productId: String)
+
+    @Query("SELECT * FROM measuring_unit ORDER BY unit_key ASC")
+    fun readMeasuringUnits(): Flow<List<MeasuringUnit>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMeasuringUnits(measuringUnit: MeasuringUnit)
+
+    @Query("SELECT * FROM category ORDER BY category ASC")
+    fun readCategory(): Flow<List<Category>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCategory(category: Category)
+
+    @Query("SELECT * FROM currency ORDER BY currency_key ASC")
+    fun readCurrency(): Flow<List<Currency>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCurrency(currency: Currency)
+
+    @Query("Delete FROM Currency WHERE id >= 0")
+    suspend fun deleteCurrency()
 }

@@ -2,12 +2,17 @@ package com.shop.eagleway.ui.main.product
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,6 +23,8 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -35,15 +42,28 @@ import androidx.compose.ui.unit.sp
 import com.shop.eagleway.R
 import com.shop.eagleway.viewmodel.ProductViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.shop.eagleway.data.Category
+import com.shop.eagleway.data.Currency
+import com.shop.eagleway.data.MeasuringUnit
 import com.shop.eagleway.data.ProductPreview
+import com.shop.eagleway.utility.LoadingState
+import com.shop.eagleway.utility.toCountryFlag
+import com.shop.eagleway.utility.toCurrency
 import com.shop.eagleway.viewmodel.ErrorState
+import kotlinx.coroutines.launch
+import java.util.Locale
 
 private const val TAG = "AddProductScreen"
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddProductScreen(modifier: Modifier = Modifier,
                      viewModel: ProductViewModel = viewModel(factory = ProductViewModel.Factory)) {
 
     val imagePreviewList by viewModel.addProductUiState.collectAsState()
+    val measuringUnitList by viewModel.measuringUnitUiState.collectAsState()
+
+    val categoryUnitList by viewModel.categoryUiState.collectAsState()
+    val currencyState by viewModel.currencyUiState.collectAsState()
 
     val context = LocalContext.current as Activity
     val focusManager = LocalFocusManager.current
@@ -51,6 +71,10 @@ fun AddProductScreen(modifier: Modifier = Modifier,
     val nameErrorState: ErrorState = viewModel.nameFieldError
     val salesPriceErrorState: ErrorState = viewModel.salesPriceFieldError
     val mrpErrorState: ErrorState = viewModel.mrpFieldError
+    val descriptionErrorState: ErrorState = viewModel.descriptionFieldError
+    val measuringUnitErrorState: ErrorState = viewModel.measuringUnitError
+    val categoryErrorState: ErrorState = viewModel.categoryFieldError
+    val currencyErrorState: ErrorState = viewModel.currencyFieldError
 
     var isLastCardRemoved by remember { mutableStateOf(false) }
 
@@ -70,17 +94,42 @@ fun AddProductScreen(modifier: Modifier = Modifier,
         }
     }
 
-    var categoryField by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
-    var measureUnitField by remember { mutableStateOf("") }
-    var colorField by remember { mutableStateOf("") }
-    var sizeField by remember { mutableStateOf("") }
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
+        skipHalfExpanded = true
+        )
 
-    var showButton by remember { mutableStateOf(false) }
+    var bottomSheet by remember { mutableStateOf(BottomSheet.Category) }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        sheetContent = {
+            when (bottomSheet) {
+                BottomSheet.Category -> {
+                    BottomSheetContentCategory(
+                        categoryUnit = categoryUnitList.category,
+                        state = modalBottomSheetState,
+                        viewModel = viewModel)
+                }
+                BottomSheet.Currency -> {
+                    BottomSheetContentCurrency(
+                        currency = currencyState.currency,
+                        state = modalBottomSheetState,
+                        viewModel = viewModel)
+                }
+                BottomSheet.MeasuringUnit -> {
+                    BottomSheetContentMeasuringUnit(
+                        measuringUnit = measuringUnitList.unit,
+                        state = modalBottomSheetState,
+                        viewModel = viewModel)
+                }
+            }
+        }) {
         Column {
-
             Card {
                 Row(
                     modifier = modifier
@@ -97,12 +146,6 @@ fun AddProductScreen(modifier: Modifier = Modifier,
 
                     Spacer(modifier = modifier.width(10.dp))
                     Text(text = "Add Product", fontSize = 18.sp)
-
-                    Spacer(modifier = modifier.weight(1f))
-
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Outlined.Settings, contentDescription = null)
-                    }
                 }
             }
 
@@ -169,7 +212,7 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                         is ErrorState.PriceError -> true
                     },
 
-                )
+                    )
 
                 Spacer(modifier = modifier.height(20.dp))
 
@@ -199,14 +242,14 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                         shape = RoundedCornerShape(20),
                         colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
                         isError = when(salesPriceErrorState) {
-                                is ErrorState.Null -> false
-                                is ErrorState.PriceError -> true
-                            }
+                            is ErrorState.Null -> false
+                            is ErrorState.PriceError -> true
+                        }
                     )
 
                     OutlinedTextField(
                         value = viewModel.mrpField.toString(),
-                        onValueChange = { viewModel.updateMrpFieldError(it.toIntOrNull() ?: 0) },
+                        onValueChange = { viewModel.updateMrpField(it.toIntOrNull() ?: 0) },
                         label =  {
                             when(mrpErrorState) {
                                 is ErrorState.Null -> {
@@ -236,22 +279,92 @@ fun AddProductScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.height(20.dp))
 
-                OutlinedTextField(
-                    value = categoryField,
-                    onValueChange = { categoryField = it },
-                    label = { Text(text = "Category") },
-                    modifier = modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
-                    singleLine = true,
-                    shape = RoundedCornerShape(20),
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-                )
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                    OutlinedTextField(
+                        value = viewModel.categoryField,
+                        onValueChange = {  },
+                        label = {
+                            when(categoryErrorState) {
+                                is ErrorState.Null -> {
+                                    Text(text = "Category")
+                                }
+                                is ErrorState.PriceError -> {
+                                    Text(text = categoryErrorState.message)
+                                }
+                            }
+                          },
+                        trailingIcon = { IconButton(onClick = {
+
+                            bottomSheet = BottomSheet.Category
+
+                            coroutineScope.launch {
+                                modalBottomSheetState.show()
+                            }
+                        }) {
+                            Icon(painter = painterResource(id = R.drawable.expand_more), contentDescription = null)
+                        } },
+                        readOnly = true,
+                        modifier = modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        singleLine = true,
+                        shape = RoundedCornerShape(20),
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                        isError = when(categoryErrorState) {
+                            is ErrorState.Null -> false
+                            is ErrorState.PriceError -> true
+                        }
+                    )
+
+                    OutlinedTextField(
+                        value = viewModel.currencyField,
+                        onValueChange = { },
+                        label = {
+                            when(currencyErrorState) {
+                                is ErrorState.Null -> {
+                                    Text(text = "Currency")
+                                }
+                                is ErrorState.PriceError -> {
+                                    Text(text = currencyErrorState.message)
+                                }
+                            }},
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                bottomSheet = BottomSheet.Currency
+
+                                coroutineScope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            }) {
+                                Icon(painter = painterResource(id = R.drawable.expand_more), contentDescription = null)
+                            }
+                        },
+                        modifier = modifier.weight(1f),
+                        readOnly = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        singleLine = true,
+                        shape = RoundedCornerShape(20),
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                        isError = when(currencyErrorState) {
+                            is ErrorState.Null -> false
+                            is ErrorState.PriceError -> true
+                        }
+                    )
+                }
+
 
                 Spacer(modifier = modifier.height(20.dp))
 
@@ -275,9 +388,29 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                     )
 
                     OutlinedTextField(
-                        value = measureUnitField,
-                        onValueChange = { measureUnitField = it },
-                        label = { Text(text = "Measuring Units") },
+                        value = viewModel.measuringUnitField,
+                        onValueChange = { },
+                        label = {
+                            when(measuringUnitErrorState) {
+                                is ErrorState.Null -> {
+                                    Text(text = "Measuring Unit")
+                                }
+                                is ErrorState.PriceError -> {
+                                    Text(text = measuringUnitErrorState.message)
+                                }
+                            }},
+                        trailingIcon = {
+                            IconButton(onClick = {
+
+                                bottomSheet = BottomSheet.MeasuringUnit
+
+                                coroutineScope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            }) {
+                                Icon(painter = painterResource(id = R.drawable.expand_more), contentDescription = null) }
+                            },
+                        readOnly = true,
                         modifier = modifier.weight(1f),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Text,
@@ -289,43 +422,27 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                         singleLine = true,
                         shape = RoundedCornerShape(20),
                         colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                        isError = when(measuringUnitErrorState) {
+                            is ErrorState.Null -> false
+                            is ErrorState.PriceError -> true
+                        }
                     )
                 }
 
                 Spacer(modifier = modifier.height(20.dp))
 
-                Divider(modifier = modifier
-                    .height(1.dp)
-                    .fillMaxWidth())
-
-                Spacer(modifier = modifier.height(20.dp))
-
-                Text(text = "Variants")
-
                 OutlinedTextField(
-                    value = colorField,
-                    onValueChange = { colorField = it },
-                    label = { Text(text = "Color") },
-                    modifier = modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
-                    singleLine = true,
-                    shape = RoundedCornerShape(20),
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-
-                )
-
-                Spacer(modifier = modifier.height(20.dp))
-
-                OutlinedTextField(
-                    value = sizeField,
-                    onValueChange = { sizeField = it },
-                    label = { Text(text = "Size") },
+                    value = viewModel.descriptionField,
+                    onValueChange = { viewModel.updateDescriptionField(it) },
+                    label = {
+                        when(descriptionErrorState) {
+                            is ErrorState.Null -> {
+                                Text(text = "Description")
+                            }
+                            is ErrorState.PriceError -> {
+                                Text(text = descriptionErrorState.message)
+                            }
+                        }},
                     modifier = modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
@@ -337,25 +454,41 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                     singleLine = true,
                     shape = RoundedCornerShape(20),
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                    isError = when(descriptionErrorState) {
+                        is ErrorState.Null -> false
+                        is ErrorState.PriceError -> true
+                    }
                 )
-            }
-        }
 
-        FloatingActionButton(
-            onClick = {
-                viewModel.saveProductInfo(
-                    bitmap = imagePreviewList.productPreview.filter { it.bitmap != null }) {
-                    context.finish()
-                } },
-            modifier = modifier
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.BottomEnd)
-                .padding(30.dp),
-            backgroundColor = colorResource(id = R.color.purple_1)
-            ) {
-            Icon(imageVector = Icons.Outlined.Check,
-                contentDescription = null,
-                tint = Color.White)
+                Spacer(modifier = modifier.weight(1f))
+
+                Button(
+                    onClick = {
+                        viewModel.saveProductInfo(bitmap = imagePreviewList.productPreview.filter { it.bitmap != null }) {
+                            context.finish()
+                        }
+                    },
+                    modifier = modifier
+                        .padding(vertical = 30.dp)
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20)),
+                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.purple_1)),
+                    enabled = viewModel.state == LoadingState.False
+                ) {
+
+                    if (viewModel.state == LoadingState.True)  {
+                        CircularProgressIndicator(
+                            modifier = modifier.size(32.dp),
+                            color = Color.LightGray,
+                            strokeWidth = 2.dp
+                        )
+
+                    } else {
+                        Text(text = "Save", fontSize = 20.sp, color = Color.White)
+                    }
+                }
+            }
         }
     }
 }
@@ -448,6 +581,289 @@ private fun ImageCard(modifier: Modifier = Modifier,
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun BottomSheetContentMeasuringUnit(modifier: Modifier = Modifier,
+                                            measuringUnit: List<MeasuringUnit>,
+                                            state: ModalBottomSheetState,
+                                            viewModel: ProductViewModel = viewModel()
+                               ) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var searchText by remember { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
+
+    Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+        Text(
+            text = "Measuring Units",
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(align = Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.h5
+        )
+
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            label = { Text(text = "Search by units") },
+            trailingIcon = {
+                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
+            singleLine = true,
+            shape = RoundedCornerShape(50),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = colorResource(
+                    id = R.color.purple_3
+                ),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+        )
+
+        LazyColumn(contentPadding = PaddingValues(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            items(measuringUnit) {
+                if (it.unitKey!!.startsWith(
+                        searchText,
+                        ignoreCase = true
+                    )) {
+                    MeasuringUnitCard(measuringUnit = it) { unit ->
+                        unit?.let { u -> viewModel.updateMeasuringField(u) }
+                        coroutineScope.launch {
+                            state.hide()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun MeasuringUnitCard(modifier: Modifier = Modifier,
+                              measuringUnit: MeasuringUnit = MeasuringUnit(),
+                              onClick: (String?) -> Unit = { }) {
+    Card(elevation = 2.dp,
+        shape = RoundedCornerShape(50),
+        backgroundColor = colorResource(id = R.color.purple_3),
+        modifier = modifier.clickable(onClick = { onClick(measuringUnit.unitValue) })
+        ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.padding(8.dp)) {
+            Text(text = measuringUnit.unitKey.toString(), fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+            Spacer(modifier = modifier.weight(1f))
+            Text(text = measuringUnit.unitValue.toString(), fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun BottomSheetContentCurrency(modifier: Modifier = Modifier,
+                                       currency: List<Currency>,
+                                       state: ModalBottomSheetState,
+                                       viewModel: ProductViewModel = viewModel()) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var searchText by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+
+    Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+        Text(
+            text = "Currency",
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(align = Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.h5
+        )
+
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            label = { Text(text = "Search by currency") },
+            trailingIcon = {
+                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
+            singleLine = true,
+            shape = RoundedCornerShape(50),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = colorResource(
+                    id = R.color.purple_3
+                ),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+        )
+
+        LazyColumn(contentPadding = PaddingValues(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            items(currency) {
+                if (it.currencyKey!!.startsWith(
+                        searchText,
+                        ignoreCase = true
+                    )) {
+
+                    CurrencyCard(currency = it) { unit ->
+                        unit?.let { u -> viewModel.updateCurrencyField(u) }
+                        coroutineScope.launch {
+                            state.hide()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun CurrencyCard(modifier: Modifier = Modifier,
+                        currency: Currency = Currency(),
+                         onClick: (String?) -> Unit = { }) {
+
+    Card(elevation = 2.dp,
+        shape = RoundedCornerShape(50),
+        backgroundColor = colorResource(id = R.color.purple_3),
+        modifier = modifier.clickable(onClick = { onClick(currency.currencyKey) })
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.padding(8.dp)) {
+            Text(text = currency.currencyFlag?.toCountryFlag ?: "", fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+            Spacer(modifier = modifier.width(10.dp))
+            Text(text = currency.currencyKey.toString(), fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+            Spacer(modifier = modifier.weight(1f))
+
+            Text(text = currency.currencyKey?.toCurrency ?: "", fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+            Spacer(modifier = modifier.width(10.dp))
+            Text(text = currency.currencyValue.toString(), fontSize = 20.sp, color = colorResource(id = R.color.purple_1))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun BottomSheetContentCategory(modifier: Modifier = Modifier,
+                               categoryUnit: List<Category>,
+                               state: ModalBottomSheetState,
+                               viewModel: ProductViewModel = viewModel()) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var searchText by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+
+    Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+        Text(
+            text = "Category",
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(align = Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.h5
+        )
+
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            label = { Text(text = "Search by category") },
+            trailingIcon = {
+                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search")
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
+            singleLine = true,
+            shape = RoundedCornerShape(50),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = colorResource(
+                    id = R.color.purple_3
+                ),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            content = {
+                items(categoryUnit) {
+                    if (it.category!!.startsWith(
+                            searchText,
+                            ignoreCase = true
+                        )) {
+
+                        CategoryCard(category = it) { category ->
+                            category?.let { u -> viewModel.updateCategoryField(u) }
+                            coroutineScope.launch {
+                                state.hide()
+                            }
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun CategoryCard(modifier: Modifier = Modifier,
+                         category: Category = Category(),
+                         onClick: (String?) -> Unit = { }) {
+
+    Chip(onClick = { onClick(category.category)}) {
+        Text(
+            text = category.category.toString(),
+            fontSize = 18.sp,
+            color = colorResource(id = R.color.purple_1),
+            maxLines = 1,
+            modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally)
+        )
+    }
+}
+
+enum class BottomSheet {
+    Category, Currency,MeasuringUnit,
 }
 
 @Preview(showBackground = true)

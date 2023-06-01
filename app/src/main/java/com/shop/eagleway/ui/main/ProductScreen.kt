@@ -1,7 +1,11 @@
 package com.shop.eagleway.ui.main
 
 import android.app.Activity
+import android.content.Intent
 import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,7 +16,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
@@ -39,30 +50,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Ignore
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.shop.eagleway.R
+import com.shop.eagleway.data.ProductInfo
 import com.shop.eagleway.data.ProductInfoWithImages
 import com.shop.eagleway.ui.main.product.AddProductActivity
+import com.shop.eagleway.ui.main.product.UpdateProductActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
+import com.shop.eagleway.utility.smartTruncate
+import com.shop.eagleway.utility.toast
 import com.shop.eagleway.viewmodel.HomeViewModel
-import com.shop.eagleway.viewmodel.LoadingState
 import com.shop.eagleway.viewmodel.ProductViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.NumberFormat
 
 private const val TAG = "ProductScreen"
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ProductScreen(modifier: Modifier = Modifier,
                   homeViewModel: HomeViewModel = viewModel(),
                   productViewModel: ProductViewModel = viewModel(),
                   activity: Activity? = null
                   ) {
+
+    val context = LocalContext.current
 
     val focusManager = LocalFocusManager.current
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = productViewModel.isRefresh)
@@ -74,11 +92,18 @@ fun ProductScreen(modifier: Modifier = Modifier,
         productViewModel.getProductInfo()
     }
 
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, stringResource(id = R.string.share_product, homeViewModel.businessName))
+        type = "text/plain"
+    }
+
+
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = productViewModel::onRefresh,
-        modifier = modifier.fillMaxSize()
     ) {
+
         Column(modifier = modifier.fillMaxSize()) {
             Card {
                 Row(
@@ -116,21 +141,14 @@ fun ProductScreen(modifier: Modifier = Modifier,
                             }
                         )
                     }
-
-                    Spacer(modifier = modifier.width(10.dp))
-
-                    IconButton(onClick = {  }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
                 }
             }
 
-            Box(modifier = modifier
-                .fillMaxSize()
-                .padding(bottom = 50.dp)) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(bottom = 50.dp)
+            ) {
 
                 Column(modifier = modifier.padding(bottom = 10.dp)) {
 
@@ -153,9 +171,15 @@ fun ProductScreen(modifier: Modifier = Modifier,
                         ),
                         singleLine = true,
                         shape = RoundedCornerShape(20),
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = colorResource(id = R.color.purple_3), focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = colorResource(
+                                id = R.color.purple_3
+                            ),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
                     )
-
                     if (productUiState.product.isEmpty()) {
                         Text(
                             text = "You haven't added any product. Add product and then start sharing them or create them or create orders for customers",
@@ -165,10 +189,22 @@ fun ProductScreen(modifier: Modifier = Modifier,
                             textAlign = TextAlign.Center
                         )
                     } else {
-                        LazyColumn(modifier = modifier.padding(12.dp)) {
+                        LazyColumn(modifier = modifier.fillMaxSize().padding(12.dp)) {
                             items(productUiState.product) { product ->
-                                if (product.productInfo.productName!!.startsWith(searchText, ignoreCase = true)) {
-                                    ProductCard(product = product)
+                                if (product.productInfo.productName!!.startsWith(
+                                        searchText,
+                                        ignoreCase = true
+                                    )
+                                ) {
+                                    ProductCard(
+                                        product = product,
+                                        onShareClick = {
+                                            val shareIntent =
+                                                Intent.createChooser(sendIntent, null)
+                                            context.startActivity(shareIntent)
+                                        },
+                                        onDeleteClick = { productViewModel.deleteProduct(it) }
+                                    )
                                 }
                             }
                         }
@@ -183,9 +219,11 @@ fun ProductScreen(modifier: Modifier = Modifier,
                         .padding(30.dp),
                     backgroundColor = colorResource(id = R.color.purple_1)
                 ) {
-                    Icon(imageVector = Icons.Outlined.Add,
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
                         contentDescription = "Add",
-                        tint = Color.White)
+                        tint = Color.White
+                    )
                 }
             }
         }
@@ -230,55 +268,214 @@ fun ProductScreen(modifier: Modifier = Modifier,
 
 @Preview(showBackground = true, backgroundColor = 0L)
 @Composable
-private fun ProductCard(modifier: Modifier = Modifier, product: ProductInfoWithImages? = null) {
+private fun ProductCard(modifier: Modifier = Modifier,
+                        product: ProductInfoWithImages? = null,
+                        onShareClick: () -> Unit = {},
+                        onDeleteClick: (String) -> Unit = {}
+                        ) {
+
+    val context = LocalContext.current as Activity
+
+    var isExpanded by remember { mutableStateOf(false) }
+    val currency = NumberFormat.getCurrencyInstance()
+
+    val imageModifierOne = modifier
+        .size(80.dp)
+        .clip(RoundedCornerShape(100))
+    val imageModifierTwo = modifier.size(80.dp)
+
+    val columnModifierOne = Modifier
+        .animateContentSize(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        )
+        .padding(bottom = 4.dp)
+
+    val columnModifierTwo = Modifier.animateContentSize(
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
+    )
+
     Card(elevation = 4.dp,
          shape = RoundedCornerShape(20),
          backgroundColor = colorResource(id = R.color.purple_3),
-        modifier = modifier.padding(4.dp)
+         modifier = modifier.padding(4.dp)
         ) {
 
-        Row(modifier = modifier.padding(10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          if (product!!.productImages.isEmpty()) {
-              Image(painter = painterResource(id = R.drawable.ic_placeholder),
-                  contentDescription = null,
-                  modifier = modifier.size(80.dp))
-          } else {
-              val productImage = File(LocalContext.current.filesDir,"productImage")
-              if (productImage.exists()) {
+        Column(modifier = if (isExpanded) columnModifierOne else columnModifierTwo) {
+            Row(modifier = modifier.padding(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-                  val file = File(productImage, product.productImages.first().imageName.toString())
+                if (isExpanded) {
+                    Card(modifier = modifier.clip(RoundedCornerShape(100)), backgroundColor = colorResource(
+                        id = R.color.light_indigo
+                    )) {
 
-                  Card(elevation = 2.dp, shape = RoundedCornerShape(20)) {
+                        Row(modifier = modifier.padding(end = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                      Image(painter = rememberAsyncImagePainter(model = file.path, contentScale = ContentScale.Crop),
-                          contentDescription = null,
-                          modifier = modifier.size(80.dp),
-                      contentScale = ContentScale.Crop)
-                  }
-              }
-          }
+                            if (product!!.productImages.isEmpty()) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_placeholder),
+                                    contentDescription = null,
+                                    modifier = if (isExpanded) imageModifierOne else imageModifierTwo
+                                )
+                            } else {
+                                val productImage = File(LocalContext.current.filesDir, "productImage")
+                                if (productImage.exists()) {
 
-            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceBetween) {
-                Text(text = product.productInfo.productName.toString(), style = MaterialTheme.typography.h6)
+                                    val file = File(
+                                        productImage,
+                                        product.productImages.first().imageName.toString()
+                                    )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Card(
+                                        elevation = 2.dp,
+                                        shape = RoundedCornerShape(20),
+                                        modifier = if (isExpanded) imageModifierOne else imageModifierTwo,
+                                    ) {
 
-                    Row {
-                        Text(text = "Price: ")
-                        Text(text = product.productInfo.salesPrice.toString(),)
+                                        Image(
+                                            painter = rememberAsyncImagePainter(
+                                                model = file.path,
+                                                contentScale = ContentScale.Crop
+                                            ),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                }
+                            }
+
+                            Column(verticalArrangement = Arrangement.SpaceBetween) {
+                                Text(
+                                    text = product.productInfo.shortTitle,
+                                    style = MaterialTheme.typography.h6,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = modifier.weight(1f))
+
+                                Text(text = "Price: ${currency.format(product.productInfo.salesPrice)}", color = Color.White)
+
+                                Row {
+                                    Text(text = "Stock: ", color = Color.White)
+                                    Text(text = product.productInfo.quantity.toString(), color = Color.White)
+                                }
+                            }
+                        }
                     }
-                    
-                    Spacer(modifier = modifier.weight(1f))
+                } else {
+                    if (product!!.productImages.isEmpty()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_placeholder),
+                            contentDescription = null,
+                            modifier = if (isExpanded) imageModifierOne else imageModifierTwo
+                        )
+                    } else {
+                        val productImage = File(LocalContext.current.filesDir, "productImage")
+                        if (productImage.exists()) {
 
-                    Row {
-                        Text(text = "Quantity: ")
-                        Text(text = product.productInfo.quantity.toString())
+                            val file = File(
+                                productImage,
+                                product.productImages.first().imageName.toString()
+                            )
+
+                            Card(
+                                elevation = 2.dp,
+                                shape = RoundedCornerShape(20),
+                                modifier = if (isExpanded) imageModifierOne else imageModifierTwo,
+                            ) {
+
+                                Image(
+                                    painter = rememberAsyncImagePainter(
+                                        model = file.path,
+                                        contentScale = ContentScale.Crop
+                                    ),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
                     }
+
+                    Column(verticalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            text = product.productInfo.shortTitle,
+                            style = MaterialTheme.typography.h6
+                        )
+
+                        Spacer(modifier = modifier.weight(1f))
+
+                        Text(text = "Price: ${currency.format(product.productInfo.salesPrice)}")
+
+                        Row {
+                            Text(text = "Stock: ")
+                            Text(text = product.productInfo.quantity.toString())
+                        }
+                    }
+                }
+
+                Spacer(modifier = modifier.weight(1f))
+                
+                IconButton(onClick = onShareClick) {
+                    Icon(imageVector = Icons.Outlined.Share,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.purple_1))
+                }
+
+                FloatingActionButton(
+                    onClick = { isExpanded = !isExpanded },
+                    modifier = modifier.size(26.dp),
+                    backgroundColor = colorResource(id = R.color.purple_1)
+                ) {
+                    Icon(painter = if(isExpanded) painterResource(id = R.drawable.expand_less) else painterResource(id = R.drawable.expand_more),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+            }
+
+            if (isExpanded) {
+                Column(modifier = modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp)) {
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Description", style = MaterialTheme.typography.h6)
+
+                        Spacer(modifier = modifier.weight(1f))
+
+                        IconButton(onClick = { UpdateProductActivity.startActivity(context, product?.productInfo?.id, product?.productInfo?.productId) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = null,
+                                tint = colorResource(id = R.color.purple_1)
+                            )
+                        }
+
+                        IconButton(onClick = { onDeleteClick(product?.productInfo?.productId!!) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = null,
+                                tint = colorResource(id = R.color.purple_1)
+                                )
+                        }
+                    }
+
+                    Text(text = product?.productInfo?.description.toString())
                 }
             }
         }
     }
 }
+
+val ProductInfo.shortTitle: String
+    get() = this.productName?.smartTruncate(10) ?: ""
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

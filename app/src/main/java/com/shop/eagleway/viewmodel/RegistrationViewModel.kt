@@ -23,6 +23,7 @@ import com.google.firebase.ktx.Firebase
 import com.shop.eagleway.R
 import com.shop.eagleway.request.User
 import com.shop.eagleway.request.UserPhoneNumber
+import com.shop.eagleway.utility.LoadingState
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "RegistrationViewModel"
@@ -234,8 +235,4 @@ interface Registration {
 
     fun checkOTPSignup(onNextScreenNewUser: () -> Unit)
     fun checkOTPLogin(onNextScreenSignedInUser: () -> Unit, context: Context)
-}
-
-enum class LoadingState {
-    True, False
 }

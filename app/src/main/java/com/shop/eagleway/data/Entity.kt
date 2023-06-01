@@ -8,6 +8,7 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.shop.eagleway.utility.smartTruncate
 
 @Entity(tableName = "product_preview")
 data class ProductPreview(
@@ -21,7 +22,7 @@ data class ProductPreview(
     val isClickable: Boolean = false
 )
 
-@Entity(tableName = "product_data", indices = [Index(value = ["product_name", "sales_price", "mrp", "quantity", "product_id"], unique = true)])
+@Entity(tableName = "product_data", indices = [Index(value = ["product_name", "sales_price", "mrp", "quantity", "product_id", "description", "category", "currency","measuring_unit"], unique = true)])
 data class ProductInfo(
 
     @PrimaryKey(autoGenerate = true)
@@ -41,7 +42,19 @@ data class ProductInfo(
     val quantity: Int? = null,
 
     @ColumnInfo("product_id")
-    val productId: String? = null
+    val productId: String? = null,
+
+    @ColumnInfo("category")
+    val category: String? = null,
+
+    @ColumnInfo("currency")
+    val currency: String? = null,
+
+    @ColumnInfo("measuring_unit")
+    val measuringUnit: String? = null,
+
+    @ColumnInfo("description")
+    val description: String? = null
 )
 
 @Entity(tableName = "product_image", indices = [Index(value = ["product_id", "image_name"], unique = true)])
@@ -58,6 +71,45 @@ data class ProductImage(
 
 )
 
+@Entity(tableName = "measuring_unit", indices = [Index(value = ["unit_key", "unit_value"], unique = true)])
+data class MeasuringUnit(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo("unit_key")
+    val unitKey: String? = null,
+
+    @ColumnInfo("unit_value")
+    val unitValue: String? = null
+)
+
+@Entity(tableName = "category", indices = [Index(value = ["category"], unique = true)])
+data class Category(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo("category")
+    val category: String? = null
+)
+
+@Entity(tableName = "currency", indices = [Index(value = ["currency_key", "currency_value", "currency_flag"], unique = true)])
+data class Currency(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo("currency_key")
+    val currencyKey: String? = null,
+
+    @ColumnInfo("currency_value")
+    val currencyValue: String? = null,
+
+    @ColumnInfo("currency_flag")
+    val currencyFlag: Int? = null
+)
+
 data class ProductInfoWithImages(
     @Embedded
     val productInfo: ProductInfo,
@@ -68,4 +120,5 @@ data class ProductInfoWithImages(
     )
     val productImages: List<ProductImage>
 )
+
 

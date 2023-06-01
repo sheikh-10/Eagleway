@@ -1,6 +1,5 @@
 package com.shop.eagleway.data
 
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
 
 interface EaglewayRepository {
@@ -26,7 +25,33 @@ interface EaglewayRepository {
 
     fun getProductWithImages(): Flow<List<ProductInfoWithImages>>
 
+    fun getProductWithImages(id: Int): Flow<ProductInfoWithImages>
+
+    suspend fun updateProductData(id: Int, productName: String, salesPrice: Int, mrp: Int, quantity: Int, description: String)
+
     suspend fun deleteProductData()
+
+    suspend fun deleteProductImage()
+
+    suspend fun deleteProductData(productId: String)
+
+    suspend fun deleteProductImage(productId: String)
+
+    fun readMeasuringUnits(): Flow<List<MeasuringUnit>>
+
+    suspend fun insertMeasuringUnits(measuringUnit: MeasuringUnit)
+
+
+    fun readCategory(): Flow<List<Category>>
+
+    suspend fun insertCategory(category: Category)
+
+    fun readCurrency(): Flow<List<Currency>>
+
+    suspend fun insertCurrency(currency: Currency)
+
+    suspend fun deleteCurrency()
+
 }
 
 class OfflineEaglewayRepository(private val dao: ProductDao): EaglewayRepository {
@@ -53,6 +78,30 @@ class OfflineEaglewayRepository(private val dao: ProductDao): EaglewayRepository
 
     override fun getProductWithImages(): Flow<List<ProductInfoWithImages>> = dao.getProductWithImages()
 
+    override fun getProductWithImages(id: Int): Flow<ProductInfoWithImages> = dao.getProductWithImages(id)
+
+    override suspend fun updateProductData(id: Int, productName: String, salesPrice: Int, mrp: Int, quantity: Int, description: String) = dao.updateProductData(id, productName, salesPrice, mrp, quantity, description)
+
     override suspend fun deleteProductData() = dao.deleteProductData()
+
+    override suspend fun deleteProductImage() = dao.deleteProductImage()
+
+    override suspend fun deleteProductData(productId: String) = dao.deleteProductData(productId)
+
+    override suspend fun deleteProductImage(productId: String) = dao.deleteProductImage(productId)
+
+    override fun readMeasuringUnits(): Flow<List<MeasuringUnit>> = dao.readMeasuringUnits()
+
+    override suspend fun insertMeasuringUnits(measuringUnit: MeasuringUnit) = dao.insertMeasuringUnits(measuringUnit)
+
+    override fun readCategory(): Flow<List<Category>> = dao.readCategory()
+
+    override suspend fun insertCategory(category: Category) = dao.insertCategory(category)
+
+    override fun readCurrency(): Flow<List<Currency>> = dao.readCurrency()
+
+    override suspend fun insertCurrency(currency: Currency) = dao.insertCurrency(currency)
+
+    override suspend fun deleteCurrency() = dao.deleteCurrency()
 }
 
