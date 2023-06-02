@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
 import com.shop.eagleway.ui.main.manage.profile.SetProfileActivity
+import com.shop.eagleway.ui.main.subscription.SubscriptionActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.viewmodel.HomeViewModel
 
@@ -79,48 +82,67 @@ fun ManageScreen(
         Column(modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            .padding(bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 
             StoreDetailsCard(businessName = viewModel.businessName)
 
-            MajorSettings(titleText = "Online Store Settings",
-                descriptionText = "Manage delivery, payment, seo & store color")
+            Card(elevation = 4.dp,
+                shape = RoundedCornerShape(10),
+                modifier = modifier.padding(horizontal = 10.dp),
+                backgroundColor = colorResource(id = R.color.purple_3)) {
 
-            MajorSettings(titleText = "Invoice Settings",
-                descriptionText = "Set invoice color, prefix & format")
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            MajorSettings(titleText = "App Store",
-                descriptionText = "Unlock free & premium tools")
+                    MajorSettings(
+                        titleText = "Online Store Settings",
+                        descriptionText = "Manage delivery, payment, seo & store color"
+                    )
 
-            MajorSettings(titleText = "Store Android App",
-                descriptionText = "Get store Android App & publish")
+                    MajorSettings(
+                        titleText = "Invoice Settings",
+                        descriptionText = "Set invoice color, prefix & format"
+                    )
 
-            MajorSettings(titleText = "Refer & Earn",
-                descriptionText = "Refer & unlock more features & reports")
-
-            MajorSettings(titleText = "Manage Staff",
-                descriptionText = "Manage your business by adding staff members")
-
-            MinorSettings(
-                titleText = "Profile Details",
-                descriptionText = "Set name, phone number, language & email") {
-                SetProfileActivity.startActivity(activity)
+                    MajorSettings(
+                        titleText = "Refer & Earn",
+                        descriptionText = "Refer & unlock more features & reports"
+                    )
+                }
             }
 
-            MinorSettings(
-                titleText = "QR code",
-                descriptionText = "Download QR code") {
-            }
+            Card(elevation = 4.dp,
+                shape = RoundedCornerShape(10),
+                modifier = modifier.padding(10.dp),
+                backgroundColor = colorResource(id = R.color.purple_3)) {
 
-            MinorSettings(
-                titleText = "About us",
-                descriptionText = "About Us, App Version and other information") {
-            }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-            OutlinedButton(onClick = onLogout, modifier = modifier
-                .fillMaxWidth()
-                .wrapContentWidth(align = Alignment.CenterHorizontally)) {
-                Text(text = "Logout")
+                    MinorSettings(
+                        titleText = "Profile Details",
+                        descriptionText = "Set name, phone number, language & email"
+                    ) {
+                        SetProfileActivity.startActivity(activity)
+                    }
+
+                    MinorSettings(
+                        titleText = "QR code",
+                        descriptionText = "Download QR code"
+                    ) {
+                    }
+
+                    MinorSettings(
+                        titleText = "About us",
+                        descriptionText = "About Us, App Version and other information"
+                    ) {
+                    }
+
+                    MinorSettings(
+                        titleText = "Logout",
+                        descriptionText = "Logout from the account"
+                    ) {
+                        onLogout()
+                    }
+                }
             }
         }
     }
@@ -133,14 +155,10 @@ private fun MajorSettings(modifier: Modifier = Modifier,
 
     Row(modifier = modifier
         .fillMaxWidth()
-        .padding(10.dp)) {
-        Icon(imageVector = Icons.Outlined.Add,
-            contentDescription = null,
-            modifier = modifier.padding(10.dp)
-        )
+        .padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
 
         Column(horizontalAlignment = Alignment.Start, modifier = modifier.weight(1f)) {
-            Text(text = titleText, fontSize = 18.sp)
+            Text(text = titleText, fontSize = 20.sp)
             Text(text = descriptionText)
         }
 
@@ -154,53 +172,66 @@ private fun MinorSettings(modifier: Modifier = Modifier,
                           descriptionText: String,
                           onClick: () -> Unit
                           ) {
-    Card(shape = RoundedCornerShape(20),
-        modifier = modifier.padding(5.dp).clickable(onClick = onClick)) {
         Row(modifier = modifier
+            .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 10.dp),
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically) {
 
             Column(horizontalAlignment = Alignment.Start,
                 modifier = modifier.weight(1f)) {
-                Text(text = titleText, fontSize = 18.sp)
+                Text(text = titleText, fontSize = 20.sp)
                 Text(text = descriptionText)
             }
 
             Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = null)
         }
-    }
 }
 
 @Composable
 private fun StoreDetailsCard(modifier: Modifier = Modifier, businessName: String = "") {
-    Card(elevation = 4.dp, shape = RoundedCornerShape(10), modifier = modifier.padding(10.dp)) {
+
+    val context = LocalContext.current as Activity
+
+    Card(elevation = 4.dp,
+        shape = RoundedCornerShape(10),
+        modifier = modifier.padding(10.dp),
+        backgroundColor = colorResource(id = R.color.purple_3)
+        ) {
         Column(modifier = modifier
             .fillMaxWidth()
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(text = "Store Details")
 
-            Row {
-                Text(text = businessName, fontSize = 18.sp)
-                Spacer(modifier = modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 StoreDetailsLogoCard()
+                Column() {
+                    Text(text = businessName, fontSize = 18.sp)
+                    Text(text = "Best store for selling product online")
+                }
             }
 
             Button(onClick = {},
                 shape = RoundedCornerShape(50),
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.purple_1))
             ) {
-                Text(text = "Store Details")
+                Text(text = "Store Details", color = Color.White)
             }
 
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = modifier.width(10.dp))
                 Text(text = "Current Plan: Free for ever")
 
                 Spacer(modifier = modifier.weight(1f))
 
-                Text(text = "Upgrade now")
+                Button(onClick = { SubscriptionActivity.startActivity(context) }, shape = RoundedCornerShape(50), colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
+                    id = R.color.purple_1
+                ))) {
+                    Text(text = "Upgrade now", color = Color.Yellow)
+                }
+
                 Spacer(modifier = modifier.width(10.dp))
             }
         }
@@ -209,10 +240,9 @@ private fun StoreDetailsCard(modifier: Modifier = Modifier, businessName: String
 
 @Composable
 private fun StoreDetailsLogoCard(modifier: Modifier = Modifier) {
-    Card(elevation = 4.dp, shape = RoundedCornerShape(10)) {
+    Card(elevation = 4.dp, shape = RoundedCornerShape(100)) {
         Column(modifier = modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(imageVector = Icons.Outlined.Add, contentDescription = null, modifier = modifier.size(20.dp))
-            Text(text = "Add Logo", fontSize = 10.sp)
+            Icon(painter = painterResource(id = R.drawable.ic_placeholder), contentDescription = null, modifier = modifier.size(30.dp))
         }
     }
 }

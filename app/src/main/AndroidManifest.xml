@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Eagleway"
         tools:targetApi="31">
         <activity
+            android:name=".ui.main.subscription.SubscriptionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.product.UpdateProductActivity"
             android:exported="false" />
         <activity
