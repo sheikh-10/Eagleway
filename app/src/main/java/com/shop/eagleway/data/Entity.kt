@@ -9,6 +9,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.shop.eagleway.utility.smartTruncate
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = "product_preview")
 data class ProductPreview(
@@ -109,6 +110,30 @@ data class Currency(
     @ColumnInfo("currency_flag")
     val currencyFlag: Int? = null
 )
+
+@Entity(tableName = "subscription", indices = [Index(value = ["name"], unique = true)])
+data class Subscription(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo("name")
+    val name: String? = null,
+
+    @ColumnInfo("plan")
+    val plan: List<SubscriptionPlan>? = null,
+
+    @ColumnInfo("plan_detail")
+    val planDetail: List<SubscriptionDetail>? = null) {
+
+    data class SubscriptionPlan(val id: Int? = null,
+                                val name: String? = null,
+                                val price: Int? = null,
+                                val description: String? = null,
+                                var isSelected: Boolean? = null)
+
+    data class SubscriptionDetail(val title: String? = null, val description: String? = null)
+}
 
 data class ProductInfoWithImages(
     @Embedded

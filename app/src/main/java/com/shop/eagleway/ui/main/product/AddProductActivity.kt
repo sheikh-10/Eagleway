@@ -33,6 +33,5 @@ class AddProductActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.resetData()
     }
 }

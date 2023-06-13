@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -46,10 +48,13 @@ import com.shop.eagleway.data.Category
 import com.shop.eagleway.data.Currency
 import com.shop.eagleway.data.MeasuringUnit
 import com.shop.eagleway.data.ProductPreview
+import com.shop.eagleway.model.ImagePreview
+import com.shop.eagleway.utility.BottomSheet
 import com.shop.eagleway.utility.LoadingState
 import com.shop.eagleway.utility.toCountryFlag
 import com.shop.eagleway.utility.toCurrency
 import com.shop.eagleway.viewmodel.ErrorState
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -76,20 +81,15 @@ fun AddProductScreen(modifier: Modifier = Modifier,
     val categoryErrorState: ErrorState = viewModel.categoryFieldError
     val currencyErrorState: ErrorState = viewModel.currencyFieldError
 
-    var isLastCardRemoved by remember { mutableStateOf(false) }
-
     var imageResult by remember { mutableStateOf<Bitmap?>(null) }
 
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) {
         imageResult = it
         it?.let {
-            if (imagePreviewList.productPreview.size == 6) {
-                viewModel.updateImagePreview(
-                    id = viewModel.addImageRowId,
-                    productPreview = ProductPreview(bitmap = it, isClickable = false)
-                )
+            if (imagePreviewList.imagePreview.size == 6) {
+                viewModel.updateImagePreview(ImagePreview(bitmap = it, isClickable = false))
             } else {
-                viewModel.insertImagePreview(ProductPreview(bitmap = it, isClickable = false))
+                viewModel.insertImagePreview(ImagePreview(bitmap = it, isClickable = false))
             }
         }
     }
@@ -157,24 +157,8 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                 .verticalScroll(rememberScrollState())) {
 
                 ImageCardList(
-                    productPreview = imagePreviewList.productPreview,
+                    imagePreview = imagePreviewList.imagePreview,
                     onClick = { launcher.launch() },
-                    onImageRemove = {
-                        when (imagePreviewList.productPreview.size) {
-                            in 0..5 -> viewModel.deleteImagePreview(it)
-                            else -> {
-                                isLastCardRemoved = if (isLastCardRemoved) {
-                                    viewModel.deleteImagePreview(it)
-                                    false
-                                } else {
-                                    viewModel.updateImagePreview(
-                                        id = viewModel.addImageRowId,
-                                        productPreview = ProductPreview(bitmap = null, isClickable = true))
-                                    true
-                                }
-                            }
-                        }
-                    },
                     viewModel = viewModel
                 )
 
@@ -365,7 +349,6 @@ fun AddProductScreen(modifier: Modifier = Modifier,
                     )
                 }
 
-
                 Spacer(modifier = modifier.height(20.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically,
@@ -464,7 +447,7 @@ fun AddProductScreen(modifier: Modifier = Modifier,
 
                 Button(
                     onClick = {
-                        viewModel.saveProductInfo(bitmap = imagePreviewList.productPreview.filter { it.bitmap != null }) {
+                        viewModel.saveProductInfo(bitmap = imagePreviewList.imagePreview.filter { it.bitmap != null }) {
                             context.finish()
                         }
                     },
@@ -496,19 +479,18 @@ fun AddProductScreen(modifier: Modifier = Modifier,
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ImageCardList(modifier: Modifier = Modifier,
-                          productPreview: List<ProductPreview>,
+                          imagePreview: List<ImagePreview>,
                           onClick: () -> Unit,
-                          onImageRemove: (ProductPreview) -> Unit = {},
                           viewModel: ProductViewModel = viewModel()
                           ) {
     LazyRow {
-        items(productPreview, key = { it.id }) {
+        items(imagePreview) {
             ImageCard(
                 modifier = modifier.animateItemPlacement(),
                 onClick = onClick,
                 isClickable = it.isClickable,
-                productPreview = it,
-                onImageRemove = onImageRemove,
+                imagePreview = it,
+                onImageRemove = viewModel::deleteImagePreview,
                 viewModel = viewModel
                 )
         }
@@ -521,8 +503,8 @@ private fun ImageCardList(modifier: Modifier = Modifier,
 private fun ImageCard(modifier: Modifier = Modifier,
                       onClick: () -> Unit = { },
                       isClickable: Boolean = false,
-                      productPreview: ProductPreview = ProductPreview(),
-                      onImageRemove: (ProductPreview) -> Unit = {},
+                      imagePreview: ImagePreview = ImagePreview(),
+                      onImageRemove: (ImagePreview) -> Unit = {},
                       viewModel: ProductViewModel = viewModel()
                       ) {
     Card(elevation = 4.dp,
@@ -553,7 +535,7 @@ private fun ImageCard(modifier: Modifier = Modifier,
 
                 Text(text = "Add Image", fontSize = 14.sp, color =  if (viewModel.imageAddError) Color.Red else colorResource(id = R.color.purple_1))
             } else {
-                productPreview.bitmap?.let {
+                imagePreview.bitmap?.let {
                     Box(modifier = modifier.fillMaxSize()) {
 
                         Image(bitmap = it.asImageBitmap(),
@@ -563,7 +545,9 @@ private fun ImageCard(modifier: Modifier = Modifier,
                         )
 
                        FloatingActionButton (
-                            onClick = { onImageRemove(productPreview) },
+                            onClick = {
+                                onImageRemove(imagePreview)
+                                      },
                             modifier = modifier
                                 .fillMaxSize()
                                 .wrapContentSize(align = Alignment.TopEnd)
@@ -780,6 +764,8 @@ private fun BottomSheetContentCategory(modifier: Modifier = Modifier,
     var searchText by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
+    var isAddCategoryClicked by remember { mutableStateOf(false) }
+
     Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
         Text(
@@ -819,51 +805,129 @@ private fun BottomSheetContentCategory(modifier: Modifier = Modifier,
             ),
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            content = {
-                items(categoryUnit) {
-                    if (it.category!!.startsWith(
-                            searchText,
-                            ignoreCase = true
-                        )) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = {
+                    items(categoryUnit) {
+                        if (it.category!!.startsWith(
+                                searchText,
+                                ignoreCase = true
+                            )) {
 
-                        CategoryCard(category = it) { category ->
-                            category?.let { u -> viewModel.updateCategoryField(u) }
-                            coroutineScope.launch {
-                                state.hide()
-                            }
+                            CategoryCard(
+                                category = it,
+                                onClick =  { category ->
+                                    category?.let { u -> viewModel.updateCategoryField(u) }
+                                    coroutineScope.launch {
+                                        state.hide()
+                                    }
+                                },
+                                onDelete = { category -> viewModel.deleteCategory(category) }
+                                )
                         }
                     }
-                }
+                },
+                modifier = modifier.weight(4f)
+            )
+
+            Spacer(modifier = modifier.weight(1f))
+
+            IconButton(
+                onClick = { isAddCategoryClicked = !isAddCategoryClicked },
+                modifier = modifier
+                    .clip(RoundedCornerShape(100))
+                    .background(
+                        color = colorResource(
+                            id = R.color.purple_1
+                        )
+                    ),
+            ) {
+                Icon(imageVector = Icons.Outlined.Add, contentDescription = null, tint = Color.Yellow)
             }
-        )
+        }
+    }
+
+    if (isAddCategoryClicked) {
+        ShowAddCategoryDialog(
+            onDismiss = { isAddCategoryClicked = !isAddCategoryClicked },
+            value = viewModel.categoryField,
+            onValueChange = viewModel::updateCategoryField,
+            onSave = viewModel::saveCategory
+            )
     }
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun CategoryCard(modifier: Modifier = Modifier,
                          category: Category = Category(),
-                         onClick: (String?) -> Unit = { }) {
-
+                         onClick: (String?) -> Unit = { },
+                         onDelete: (category: Category) -> Unit = {}
+                         ) {
     Chip(onClick = { onClick(category.category)}) {
-        Text(
-            text = category.category.toString(),
-            fontSize = 18.sp,
-            color = colorResource(id = R.color.purple_1),
-            maxLines = 1,
-            modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = category.category.toString(),
+                fontSize = 18.sp,
+                color = colorResource(id = R.color.purple_1),
+                maxLines = 1,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+            )
+            IconButton(onClick = { onDelete(category) }) {
+                Icon(imageVector = Icons.Outlined.Close, contentDescription = null)
+            }
+        }
+
     }
 }
 
-enum class BottomSheet {
-    Category, Currency,MeasuringUnit,
+@Preview
+@Composable
+private fun ShowAddCategoryDialog(modifier: Modifier = Modifier,
+                                  onDismiss: () -> Unit = {},
+                                  value: String = "",
+                                  onValueChange: (String) -> Unit = {},
+                                  onSave: () -> Unit = {}) {
+
+    var isClicked by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Add Category", modifier = modifier.padding(10.dp))
+        },
+        text = {
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                label = { Text(text = if (isClicked) "" else "(Eg) Mobile, Laptop") },
+                shape = RoundedCornerShape(20),
+                interactionSource = remember { MutableInteractionSource() }.also {
+                                          LaunchedEffect(it) {
+                                              it.interactions.collect { interation ->
+                                                  if (interation is PressInteraction.Release) {
+                                                      isClicked = !isClicked
+                                                  }
+                                              }
+                                          }
+                },
+                ) },
+        confirmButton = {
+            Button(onClick = {
+                onSave()
+                onDismiss()
+            }, shape = RoundedCornerShape(50)) {
+                Text(text = "Ok") }
+            },
+        dismissButton = { Button(onClick = onDismiss, shape = RoundedCornerShape(50)) {
+            Text(text = "Cancel")
+        } },
+        shape = RoundedCornerShape(10)
+        )
 }
 
 @Preview(showBackground = true)

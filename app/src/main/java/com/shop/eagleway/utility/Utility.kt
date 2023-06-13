@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import com.shop.eagleway.data.Subscription
 import com.shop.eagleway.ui.main.invoice.InvoiceAllScreen
 import com.shop.eagleway.ui.main.invoice.InvoicePaidScreen
 import com.shop.eagleway.ui.main.invoice.InvoiceUnpaidScreen
@@ -59,4 +60,12 @@ val String.toCurrency: String
 
 enum class LoadingState {
     True, False
+}
+
+fun Subscription.SubscriptionPlan.onPlanClick(plan: List<Subscription.SubscriptionPlan>?, planIndex: Int): List<Subscription.SubscriptionPlan> {
+    return plan?.map { it.copy(isSelected = it.id == planIndex) } ?: emptyList()
+}
+
+enum class BottomSheet {
+    Category, Currency,MeasuringUnit,
 }

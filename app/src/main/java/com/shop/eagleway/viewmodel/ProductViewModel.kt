@@ -3,6 +3,7 @@ package com.shop.eagleway.viewmodel
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,7 @@ import com.shop.eagleway.data.ProductImage
 import com.shop.eagleway.data.ProductInfo
 import com.shop.eagleway.data.ProductInfoWithImages
 import com.shop.eagleway.data.ProductPreview
+import com.shop.eagleway.model.ImagePreview
 import com.shop.eagleway.request.ProductData
 import com.shop.eagleway.response.Category
 import com.shop.eagleway.response.Currency
@@ -39,7 +41,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.UUID
 
-data class AddProductUiState(val productPreview: List<ProductPreview>)
+data class AddProductUiState(val imagePreview: List<ImagePreview> = emptyList())
 
 data class ProductUiState(val product: List<ProductInfoWithImages>)
 
@@ -167,16 +169,137 @@ class ProductViewModel(
         }
     }
 
-    val addProductUiState: StateFlow<AddProductUiState> =
-        repository.getImagePreview().map {
-            AddProductUiState(productPreview = it)
+    /**
+     * Used in Add, Update product screen image preview
+     * */
+    var addProductUiState = MutableStateFlow(AddProductUiState())
+        private set
+    private fun resetAddProduct() {
+        addProductUiState.value = AddProductUiState(listOf(ImagePreview(bitmap = null, isClickable = true)))
+    }
+    fun insertImagePreview(imagePreview: ImagePreview) {
+        val list = mutableListOf<ImagePreview>().apply {
+            add(imagePreview)
+            addAll(addProductUiState.value.imagePreview)
         }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = AddProductUiState(emptyList())
-            )
 
+        addProductUiState.value = AddProductUiState(list)
+    }
+
+    fun updateImagePreview(imagePreview: ImagePreview)  {
+        val list = mutableListOf<ImagePreview>().apply {
+            add(imagePreview)
+            addAll(addProductUiState.value.imagePreview)
+            remove(ImagePreview(bitmap = null, isClickable = true))
+        }
+        addProductUiState.value = AddProductUiState(list)
+    }
+
+    fun updateImagePreview(context: Context, imagePreview: List<ProductImage>?) {
+        val imageSize = imagePreview?.size
+
+        val productImage = File(context.filesDir, "productImage")
+        if (productImage.exists()) {
+            when (imageSize) {
+                6 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    addProductUiState.value = AddProductUiState(list)
+                }
+                5 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    list.add(ImagePreview(bitmap = null, isClickable = true))
+                    addProductUiState.value = AddProductUiState(list)
+                }
+                4 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    list.add(ImagePreview(bitmap = null, isClickable = true))
+                    addProductUiState.value = AddProductUiState(list)
+                }
+                3 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    list.add(ImagePreview(bitmap = null, isClickable = true))
+                    addProductUiState.value = AddProductUiState(list)
+                }
+                2 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    list.add(ImagePreview(bitmap = null, isClickable = true))
+                    addProductUiState.value = AddProductUiState(list)
+                }
+                1 -> {
+                    val list = mutableListOf<ImagePreview>()
+
+                    imagePreview.forEach {
+                        val file = File(productImage, it.imageName.toString())
+                        val bitmap = BitmapFactory.decodeFile(file.path)
+                        list.add(ImagePreview(bitmap = bitmap, isClickable = false))
+                    }
+
+                    list.add(ImagePreview(bitmap = null, isClickable = true))
+                    addProductUiState.value = AddProductUiState(list)
+                }
+            }
+        }
+    }
+
+    fun deleteImagePreview(imagePreview: ImagePreview) {
+        val list = mutableListOf<ImagePreview>().apply {
+            addAll(addProductUiState.value.imagePreview)
+            remove(imagePreview)
+
+            when (size) {
+                5 -> {
+                    if (contains(ImagePreview(bitmap = null, isClickable = true))) {
+                        remove(ImagePreview(bitmap = null, isClickable = true))
+                        add(ImagePreview(bitmap = null, isClickable = true))
+                    } else {
+                        add(ImagePreview(bitmap = null, isClickable = true))
+                    }
+                }
+                4 -> {
+                    remove(imagePreview)
+                }
+                3 -> { remove(imagePreview) }
+                2 -> { remove(imagePreview) }
+            }
+        }
+
+        addProductUiState.value = AddProductUiState(list)
+    }
 
     val productUiState: StateFlow<ProductUiState> = repository.getProductWithImages().map {
         ProductUiState(product = it)
@@ -219,29 +342,9 @@ class ProductViewModel(
         initialValue = CurrencyUiState(emptyList())
     )
 
-    fun insertImagePreview(productPreview: ProductPreview) = viewModelScope.launch {
-        repository.insertImagePreview(productPreview)
-    }
-
-    fun updateImagePreview(id: Long, productPreview: ProductPreview) = viewModelScope.launch {
-        repository.updateImagePreview(id, productPreview)
-    }
-
-    fun deleteImagePreview(productPreview: ProductPreview) = viewModelScope.launch {
-        repository.deleteImagePreview(productPreview)
-    }
-
-    private fun initialData() = viewModelScope.launch {
-        addImageRowId = repository.insertImagePreview(ProductPreview(0, null, isClickable = true))
-    }
-
-    fun resetData() = viewModelScope.launch {
-        repository.deleteAll()
-    }
-
-    fun saveProductInfo(bitmap: List<ProductPreview>, func: () -> Unit) {
+    fun saveProductInfo(bitmap: List<ImagePreview>, func: () -> Unit) {
         when {
-            addProductUiState.value.productPreview.size == 1 -> { imageAddError = true }
+            addProductUiState.value.imagePreview.size == 1 -> { imageAddError = true }
             nameField.isEmpty() -> { nameFieldError = ErrorState.PriceError("Name should not be empty") }
             nameField.length < 3 -> { nameFieldError = ErrorState.PriceError("Name should be at least 3 character") }
             salesPriceField <= 0 -> { salesPriceFieldError = ErrorState.PriceError("Price should not be zero") }
@@ -276,14 +379,17 @@ class ProductViewModel(
         }
     }
 
-    fun updateProductInfo(id: Int, productId: String, bitmap: List<ProductPreview>, func: () -> Unit) = viewModelScope.launch {
+    fun updateProductInfo(id: Int, productId: String, bitmap: List<ImagePreview>, func: () -> Unit) = viewModelScope.launch {
         when {
-            addProductUiState.value.productPreview.size == 1 -> { imageAddError = true }
+            addProductUiState.value.imagePreview.size == 1 -> { imageAddError = true }
             nameField.isEmpty() -> { nameFieldError = ErrorState.PriceError("Name should not be empty") }
             nameField.length < 3 -> { nameFieldError = ErrorState.PriceError("Name should be at least 3 character") }
             salesPriceField <= 0 -> { salesPriceFieldError = ErrorState.PriceError("Price should not be zero") }
             mrpField <= 0 -> { mrpFieldError = ErrorState.PriceError("Price should not be zero") }
             (salesPriceField > mrpField) -> { salesPriceFieldError = ErrorState.PriceError("Price should be lower than MRP") }
+            categoryField.isEmpty() -> { categoryFieldError = ErrorState.PriceError("Category should not empty") }
+            currencyField.isEmpty() -> { currencyFieldError = ErrorState.PriceError("Currency should not empty") }
+            measuringUnitField.isEmpty() -> { measuringUnitError = ErrorState.PriceError("Units should not empty") }
             descriptionField.isEmpty() -> { descriptionFieldError = ErrorState.PriceError("Description should not be empty") }
             else -> {
                 val ref = database.getReference("productData")
@@ -299,7 +405,7 @@ class ProductViewModel(
 
                             if (value?.productId == productId) {
 
-                                val productInfo = ProductData(name = nameField, salesPrice = salesPriceField, mrp = mrpField, quantity = quantityField, userNum = value.userNum,productId = value.productId, description = descriptionField)
+                                val productInfo = ProductData(name = nameField, salesPrice = salesPriceField, mrp = mrpField, category = categoryField, currency = currencyField, quantity = quantityField, measuringUnit = measuringUnitField, userNum = value.userNum, productId = value.productId, description = descriptionField)
                                 data.ref.setValue(productInfo)
                             }
 
@@ -313,15 +419,17 @@ class ProductViewModel(
                         state = LoadingState.False
                     }
                 })
+
+                saveProductImage(bitmap, productId) {}
             }
         }
     }
 
     //helper method for saveProductInfo()
-    private fun saveProductImage(productPreview: List<ProductPreview>, productId: String, func: () -> Unit) {
+    private fun saveProductImage(imagePreview: List<ImagePreview>, productId: String, func: () -> Unit) {
         val ref = storage.reference
 
-        productPreview.forEach {
+        imagePreview.forEach {
             val productImageRef = ref.child("product_image_${userNum}/$productId/${UUID.randomUUID()}.jpg")
 
             val bytes = ByteArrayOutputStream()
@@ -339,6 +447,17 @@ class ProductViewModel(
                 state = LoadingState.False
                 }
         }
+    }
+
+    fun deleteProductImage(imageName: String) {
+        storage.reference.child("product_image_$userNum/$imageName")
+            .delete()
+            .addOnSuccessListener {
+                Log.d(TAG, "File has been deleted")
+            }
+            .addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
     }
 
     fun getProductInfo() {
@@ -484,23 +603,33 @@ class ProductViewModel(
         })
     }
 
-    private fun getCategoryDb() {
-        val ref = database.getReference("category")
+//    private fun getCategoryDb() {
+//        val ref = database.getReference("category")
+//
+//        ref.addListenerForSingleValueEvent(object :
+//            ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                snapshot.children.forEach {
+//                    it.getValue(Category::class.java)?.apply {
+//                        viewModelScope.launch {
+//                            repository.insertCategory(com.shop.eagleway.data.Category(category = category))
+//                        }
+//                    }
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {  }
+//        })
+//    }
 
-        ref.addListenerForSingleValueEvent(object :
-            ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.forEach {
-                    it.getValue(Category::class.java)?.apply {
-                        viewModelScope.launch {
-                            repository.insertCategory(com.shop.eagleway.data.Category(category = category))
-                        }
-                    }
-                }
-            }
+    fun saveCategory() = viewModelScope.launch {
+        if (categoryField.length > 3) {
+            repository.insertCategory(category = com.shop.eagleway.data.Category(category = categoryField))
+        }
+    }
 
-            override fun onCancelled(error: DatabaseError) {  }
-        })
+    fun deleteCategory(category: com.shop.eagleway.data.Category) = viewModelScope.launch {
+        repository.deleteCategory(category)
     }
 
     private fun getCurrencyDb() {
@@ -530,11 +659,11 @@ class ProductViewModel(
     }
 
     init {
-        initialData()
         getNumFromLocalDb()
         getMeasuringUnitsDb()
-        getCategoryDb()
+//        getCategoryDb()
         getCurrencyDb()
+        resetAddProduct()
     }
 
     companion object {

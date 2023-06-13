@@ -46,15 +46,21 @@ interface EaglewayRepository {
 
     suspend fun insertCategory(category: Category)
 
+    suspend fun deleteCategory(category: Category)
+
     fun readCurrency(): Flow<List<Currency>>
 
     suspend fun insertCurrency(currency: Currency)
 
     suspend fun deleteCurrency()
 
+    suspend fun readSubscription(): List<Subscription>
+
+    suspend fun insertSubscription(subscription: Subscription)
+
 }
 
-class OfflineEaglewayRepository(private val dao: ProductDao): EaglewayRepository {
+class OfflineEaglewayRepository(private val dao: ProductDao, private val subDao: SubscriptionDao): EaglewayRepository {
 
     override fun getImagePreview(): Flow<List<ProductPreview>> = dao.read()
 
@@ -98,10 +104,16 @@ class OfflineEaglewayRepository(private val dao: ProductDao): EaglewayRepository
 
     override suspend fun insertCategory(category: Category) = dao.insertCategory(category)
 
+    override suspend fun deleteCategory(category: Category) = dao.deleteCategory(category)
+
     override fun readCurrency(): Flow<List<Currency>> = dao.readCurrency()
 
     override suspend fun insertCurrency(currency: Currency) = dao.insertCurrency(currency)
 
     override suspend fun deleteCurrency() = dao.deleteCurrency()
+
+    override suspend fun readSubscription(): List<Subscription> = subDao.read()
+
+    override suspend fun insertSubscription(subscription: Subscription) = subDao.insert(subscription)
 }
 

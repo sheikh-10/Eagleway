@@ -15,9 +15,6 @@ interface ProductDao {
     @Query("SELECT * FROM product_preview ORDER BY id DESC ")
     fun read(): Flow<List<ProductPreview>>
 
-//    @Query("SELECT ")
-//    fun read(id: Int): Flow<List<ProductPreview>>
-
     @Update
     suspend fun update(preview: ProductPreview)
 
@@ -45,7 +42,7 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun create(productImage: ProductImage)
 
-    @Query("SELECT * FROM product_data")
+    @Query("SELECT * FROM product_data ORDER BY id DESC")
     fun getProductWithImages(): Flow<List<ProductInfoWithImages>>
 
     @Query("SELECT * FROM product_data WHERE id = :id")
@@ -77,6 +74,9 @@ interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: Category)
+
+    @Delete
+    suspend fun deleteCategory(category: Category)
 
     @Query("SELECT * FROM currency ORDER BY currency_key ASC")
     fun readCurrency(): Flow<List<Currency>>

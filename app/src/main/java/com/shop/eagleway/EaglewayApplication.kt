@@ -11,6 +11,8 @@ class EaglewayApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        container = EaglewayAppContainer(EaglewayDatabase.getDatabase(applicationContext).productDao())
+
+        val context = EaglewayDatabase.getDatabase(applicationContext)
+        container = EaglewayAppContainer(context.productDao(), context.subDao())
     }
 }

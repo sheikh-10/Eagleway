@@ -47,7 +47,6 @@ fun EaglewayApp(
     homeViewModel.readUserInfoFromDatabase(LocalContext.current)
 
     productViewModel.getProductInfo()
-    productViewModel.resetData()
 
     Scaffold(bottomBar = {
         BottomNavigation(navController = navController)
