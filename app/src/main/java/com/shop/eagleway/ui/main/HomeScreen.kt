@@ -57,10 +57,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
     val manageBusinessDataList = listOf<ManageBusiness>(
         ManageBusiness(name = "Customers", iconRes = R.drawable.ic_customers,  bgColor = R.color.light_deep_blue),
         ManageBusiness(name = "Invoices", iconRes = R.drawable.ic_invoice, bgColor = R.color.light_cyan),
-        ManageBusiness(name = "Reports", iconRes = R.drawable.ic_reports, bgColor = R.color.light_teal),
-        ManageBusiness(name = "Estimates", iconRes = R.drawable.ic_estimates, bgColor = R.color.light_green),
-        ManageBusiness(name = "Purchase Orders", iconRes = R.drawable.ic_purchase_orders, bgColor = R.color.light_lime),
-        ManageBusiness(name = "To Pay", iconRes = R.drawable.ic_wallet, bgColor = R.color.light_purple),
+        ManageBusiness(name = "Purchase Order", iconRes = R.drawable.ic_purchase_orders, bgColor = R.color.light_lime),
         ManageBusiness(name = "To Collect", iconRes = R.drawable.ic_payments, bgColor = R.color.light_deep_purple),
     )
     
@@ -69,10 +66,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
         GrowBusiness(name = "Coupons", iconRes = R.drawable.ic_coupon, bgColor = R.color.light_green),
         GrowBusiness(name = "Store Banner", iconRes = R.drawable.ic_store_banner, bgColor = R.color.light_cyan),
         GrowBusiness(name = "Wallet Settings", iconRes = R.drawable.ic_wallet_settings, bgColor = R.color.light_blue),
-        GrowBusiness(name = "Banners", iconRes = R.drawable.ic_marketing_banner, bgColor = R.color.light_indigo),
         GrowBusiness(name = "Greetings", iconRes = R.drawable.ic_favorite, bgColor = R.color.light_red),
         GrowBusiness(name = "Business Card", iconRes = R.drawable.ic_card, bgColor = R.color.light_pink),
-        GrowBusiness(name = "App Store", iconRes = R.drawable.ic_store, bgColor = R.color.light_orange)
     )
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -128,7 +123,10 @@ fun HomeScreen(modifier: Modifier = Modifier,
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())) {
 
-                Card {
+                Card(elevation = 4.dp, shape = RoundedCornerShape(50),
+                    modifier = modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp),
+                    backgroundColor = colorResource(id = R.color.purple_1)
+                    ) {
                     Row(modifier = modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
@@ -136,35 +134,63 @@ fun HomeScreen(modifier: Modifier = Modifier,
                     ) {
 
                         Spacer(modifier = modifier.width(10.dp))
-                        Icon(imageVector = Icons.Outlined.Star,
-                            contentDescription = null)
-                        Spacer(modifier = modifier.width(10.dp))
                         Text(text = "Upgrade to paid plan to enjoy best of Eagleway",
-                            fontSize = 12.sp ,
-                            modifier = modifier.weight(1f)
-                        )
+                            style = MaterialTheme.typography.body2,
+                            modifier = modifier.weight(1f),
+                            color = Color.White
+                            )
 
-                        OutlinedButton(onClick = {}, shape = RoundedCornerShape(20)) {
-                            Text(text = "Upgrade")
+                        OutlinedButton(onClick = {}, shape = RoundedCornerShape(50)) {
+                            Text(text = "Upgrade", color = colorResource(id = R.color.purple_1))
                         }
                     }
                 }
 
                 Spacer(modifier = modifier.height(10.dp))
 
-                Card {
+                Card(elevation = 4.dp, 
+                    shape = RoundedCornerShape(10), 
+                    modifier = modifier.padding(horizontal = 10.dp, vertical = 4.dp), 
+                    backgroundColor = Color.LightGray
+                    ) {
                     Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Row(modifier = modifier.fillMaxWidth()) {
-                            Column(modifier = modifier.weight(1f)) {
-                                Text(text = "Business summary", fontSize = 14.sp, style = MaterialTheme.typography.h6)
-                                Text(text = "Complete Business summary in a glance", fontSize = 12.sp)
+                        Row(modifier = modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+
+                            Card(elevation = 2.dp, shape = RoundedCornerShape(50),
+                                backgroundColor = Color.White) {
+                                Column(modifier = modifier.padding(10.dp)) {
+                                    Text(text = "Business summary", fontSize = 18.sp, style = MaterialTheme.typography.h6, color = colorResource(
+                                        id = R.color.purple_1
+                                    ))
+                                }
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Today", fontSize = 12.sp)
+                            FloatingActionButton(
+                                onClick = { },
+                                backgroundColor = colorResource(id = R.color.purple_1),
+                                modifier = modifier.size(24.dp)
+                            ) {
+                                Icon(imageVector = Icons.Outlined.Info,
+                                    contentDescription = null,
+                                    tint = Color.White)
+                            }
+                            
+                            Spacer(modifier = modifier.weight(1f))
 
-                                Icon(imageVector = Icons.Outlined.KeyboardArrowDown,
-                                    contentDescription = null)
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(text = "Today", fontSize = 16.sp)
+
+                                FloatingActionButton(onClick = {}, modifier = modifier.size(20.dp), backgroundColor = colorResource(
+                                    id = R.color.purple_1
+                                )) {
+                                    Icon(imageVector = Icons.Outlined.KeyboardArrowDown,
+                                        contentDescription = null,
+                                        tint = Color.White
+                                        )
+                                }
                             }
                         }
 
@@ -185,42 +211,82 @@ fun HomeScreen(modifier: Modifier = Modifier,
                     }
                 }
 
-                Spacer(modifier = modifier.height(10.dp))
-
-                Card {
+                Card(elevation = 4.dp,
+                    shape = RoundedCornerShape(10), 
+                    modifier = modifier.padding(horizontal = 10.dp, vertical = 4.dp), 
+                    backgroundColor = Color.LightGray
+                    ) {
                     Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Column {
-                            Text(text = "Manage Business", fontSize = 14.sp, style = MaterialTheme.typography.h6)
-                            Text(text = "Manage your business with different shortcuts", fontSize = 12.sp)
+
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Card(elevation = 2.dp, shape = RoundedCornerShape(50), backgroundColor = Color.White) {
+                                Column(modifier = modifier.padding(10.dp)) {
+                                    Text(text = "Manage Business", fontSize = 18.sp, style = MaterialTheme.typography.h6, color = colorResource(
+                                        id = R.color.purple_1
+                                    ))
+                                }
+                            }
+
+                            FloatingActionButton(
+                                onClick = { },
+                                backgroundColor = colorResource(id = R.color.purple_1),
+                                modifier = modifier.size(24.dp)
+                            ) {
+                                Icon(imageVector = Icons.Outlined.Info,
+                                    contentDescription = null,
+                                    tint = Color.White)
+                            }
                         }
 
                         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             ManageBusinessCard(modifier = modifier.weight(1f), manageBusiness = manageBusinessDataList[0])
                             ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[1])
+                        }
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[2])
                             ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[3])
-                        }
-
-                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            ManageBusinessCard(modifier = modifier.weight(1f), manageBusiness = manageBusinessDataList[4])
-                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[5])
-                            ManageBusinessCard(modifier = modifier.weight(1f),manageBusiness = manageBusinessDataList[6])
                         }
                     }
                 }
 
-                Spacer(modifier = modifier.height(10.dp))
-
-                Card {
+                Card(elevation = 4.dp,
+                    shape = RoundedCornerShape(10),
+                    modifier = modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    backgroundColor = Color.LightGray
+                    ) {
                     Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Column {
-                            Text(text = "Grow Business", fontSize = 14.sp, style = MaterialTheme.typography.h6)
-                            Text(text = "Grow Business with Online website, Social Selling", fontSize = 12.sp)
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Card(elevation = 2.dp, shape = RoundedCornerShape(50),
+                                backgroundColor = Color.White) {
+                                Column(modifier = modifier.padding(10.dp)) {
+                                    Text(
+                                        text = "Grow Business",
+                                        fontSize = 18.sp,
+                                        style = MaterialTheme.typography.h6,
+                                        color = colorResource(id = R.color.purple_1)
+                                    )
+                                }
+                            }
+
+                            FloatingActionButton(
+                                onClick = { },
+                                backgroundColor = colorResource(id = R.color.purple_1),
+                                modifier = modifier.size(24.dp)
+                            ) {
+                                Icon(imageVector = Icons.Outlined.Info,
+                                    contentDescription = null,
+                                    tint = Color.White)
+                            }
                         }
 
                         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[0])
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[1])
+                        }
+
+                        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[2])
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[3])
                         }
@@ -228,9 +294,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
                         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[4])
                             GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[5])
-                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[6])
-                            GrowBusinessCard(modifier = modifier.weight(1f), growBusiness = growBusinessDataList[7])
                         }
+
                     }
                 }
 
@@ -250,7 +315,6 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             Text(text = "Help and Support", fontSize = 14.sp, style = MaterialTheme.typography.h6)
                             Text(text = "Contact customer care to resolve queries", fontSize = 12.sp)
                         }
-
                     }
                 }
 
@@ -270,7 +334,8 @@ private data class HomeCardData(
 private fun HomeCard(modifier: Modifier = Modifier,
                      homeCardData: HomeCardData = HomeCardData(name = "Sale", value = 0, iconRes = R.drawable.ic_sale, bgColor = R.color.light_blue)
 ) {
-    Card(modifier = modifier, elevation = 4.dp, shape = RoundedCornerShape(10), backgroundColor = colorResource(
+    Card(modifier = modifier,
+        elevation = 4.dp, shape = RoundedCornerShape(50), backgroundColor = colorResource(
         id = R.color.purple_3
     )) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -279,7 +344,7 @@ private fun HomeCard(modifier: Modifier = Modifier,
                 onClick = {},
                 modifier = Modifier
                     .padding(5.dp)
-                    .clip(RoundedCornerShape(20))
+                    .clip(RoundedCornerShape(50))
                     .background(color = colorResource(id = homeCardData.bgColor))) {
 
                         Icon(
@@ -290,8 +355,8 @@ private fun HomeCard(modifier: Modifier = Modifier,
                     }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "${homeCardData.value}", fontSize = 18.sp)
-                Text(text = homeCardData.name, fontSize = 14.sp)
+                Text(text = "${homeCardData.value}", fontSize = 18.sp, style = MaterialTheme.typography.body1)
+                Text(text = homeCardData.name, fontSize = 14.sp, style = MaterialTheme.typography.body2)
             }
         }
     }
@@ -309,20 +374,29 @@ private data class ManageBusiness(
 @Composable
 private fun ManageBusinessCard(modifier: Modifier = Modifier,
                                manageBusiness: ManageBusiness = ManageBusiness("Customers", R.drawable.ic_customers, bgColor = R.color.light_lime) ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(
-            onClick = {},
-            modifier = Modifier
-                .padding(5.dp)
-                .clip(RoundedCornerShape(20))
-                .background(color = colorResource(id = manageBusiness.bgColor))) {
-            Icon(painter = painterResource(manageBusiness.iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
-        }
+    Card(modifier = modifier,
+        elevation = 4.dp,
+        shape = RoundedCornerShape(50),
+        backgroundColor = colorResource(id = R.color.purple_3)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(color = colorResource(id = manageBusiness.bgColor))) {
 
-        Text(text = manageBusiness.name, fontSize = 12.sp)
+                Icon(
+                    painter = painterResource(manageBusiness.iconRes),
+                    contentDescription = null,
+                    modifier = modifier.size(30.dp)
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = manageBusiness.name, style = MaterialTheme.typography.body1)
+            }
+        }
     }
 }
 
@@ -338,19 +412,29 @@ private data class GrowBusiness(
 @Composable
 private fun GrowBusinessCard(modifier: Modifier = Modifier,
                                growBusiness: GrowBusiness = GrowBusiness("Customers", R.drawable.ic_collections, bgColor = R.color.light_blue) ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(
-            onClick = {},
-            modifier = Modifier
-                .padding(5.dp)
-                .clip(RoundedCornerShape(20))
-                .background(color = colorResource(id = growBusiness.bgColor))) {
-            Icon(painter = painterResource(growBusiness.iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
+    Card(modifier = modifier,
+        elevation = 4.dp,
+        shape = RoundedCornerShape(50),
+        backgroundColor = colorResource(id = R.color.purple_3)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(color = colorResource(id = growBusiness.bgColor))) {
+
+                Icon(
+                    painter = painterResource(growBusiness.iconRes),
+                    contentDescription = null,
+                    modifier = modifier.size(30.dp)
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = growBusiness.name, style = MaterialTheme.typography.body1)
+            }
         }
-        Text(text = growBusiness.name, fontSize = 12.sp)
     }
 }
 

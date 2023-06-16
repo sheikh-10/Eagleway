@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.shop.eagleway.ui.main.product.AddProductActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.utility.PaymentUtility
+import com.shop.eagleway.viewmodel.SubscriptionViewModel
 
 class SubscriptionActivity : ComponentActivity() {
 
@@ -27,6 +29,7 @@ class SubscriptionActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             EaglewayTheme {
                 SubscriptionScreen()

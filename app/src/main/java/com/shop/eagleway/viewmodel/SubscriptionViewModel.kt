@@ -41,7 +41,7 @@ class SubscriptionViewModel(private val repository: EaglewayRepository): ViewMod
         }
     }
 
-    private fun getSubscriptionData() = viewModelScope.launch {
+    fun getSubscriptionData() = viewModelScope.launch {
         val result = repository.readSubscription()
         _uiState.value = SubscriptionUiState(result)
     }
@@ -52,6 +52,7 @@ class SubscriptionViewModel(private val repository: EaglewayRepository): ViewMod
         ref.addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+
                 snapshot.children.forEach {
                     it.getValue(com.shop.eagleway.response.Subscription::class.java)?.apply {
                         viewModelScope.launch {

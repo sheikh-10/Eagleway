@@ -62,6 +62,7 @@ import com.shop.eagleway.ui.main.product.AddProductActivity
 import com.shop.eagleway.ui.main.product.UpdateProductActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.utility.smartTruncate
+import com.shop.eagleway.utility.toCurrency
 import com.shop.eagleway.utility.toast
 import com.shop.eagleway.viewmodel.HomeViewModel
 import com.shop.eagleway.viewmodel.ProductViewModel
@@ -361,7 +362,7 @@ private fun ProductCard(modifier: Modifier = Modifier,
 
                                 Spacer(modifier = modifier.weight(1f))
 
-                                Text(text = "Price: ${currency.format(product.productInfo.salesPrice)}", color = Color.White)
+                                Text(text = "Price: ${product.productInfo.currency?.toCurrency ?: ""}${product.productInfo.salesPrice}", color = Color.White)
 
                                 Row {
                                     Text(text = "Stock: ", color = Color.White)
@@ -412,7 +413,7 @@ private fun ProductCard(modifier: Modifier = Modifier,
 
                         Spacer(modifier = modifier.weight(1f))
 
-                        Text(text = "Price: ${currency.format(product.productInfo.salesPrice)}")
+                        Text(text = "Price: ${product.productInfo.currency?.toCurrency ?: ""}${product.productInfo.salesPrice}")
 
                         Row {
                             Text(text = "Stock: ")

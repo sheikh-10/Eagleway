@@ -20,6 +20,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.viewmodel.HomeViewModel
+import com.shop.eagleway.viewmodel.SubscriptionViewModel
 
 class HomeActivity : ComponentActivity() {
 
@@ -35,7 +36,6 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this@HomeActivity)
-
         setContent {
             EaglewayTheme {
                 EaglewayApp(activity = this@HomeActivity)
