@@ -1,11 +1,26 @@
 package com.shop.eagleway.viewmodel
 
+import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.wallet.IsReadyToPayRequest
+import com.google.android.gms.wallet.PaymentsClient
+import com.google.android.gms.wallet.Wallet
+import com.google.android.gms.wallet.WalletConstants
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -15,16 +30,29 @@ import com.google.firebase.ktx.Firebase
 import com.shop.eagleway.EaglewayApplication
 import com.shop.eagleway.data.EaglewayRepository
 import com.shop.eagleway.data.Subscription
+import com.shop.eagleway.ui.main.subscription.SubscriptionScreen
 import com.shop.eagleway.utility.PaymentUtility
+import com.shop.eagleway.utility.log
+import com.shop.eagleway.utility.toast
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 data class SubscriptionUiState(val subscription: List<Subscription> = emptyList())
 
-class SubscriptionViewModel(private val repository: EaglewayRepository): ViewModel() {
+class SubscriptionViewModel(
+    private val repository: EaglewayRepository,
+    private val context: Application
+    ): ViewModel() {
 
     private val database: FirebaseDatabase = Firebase.database
 
@@ -39,19 +67,40 @@ class SubscriptionViewModel(private val repository: EaglewayRepository): ViewMod
                 }
             )
         }
+
+        viewModelScope.launch {
+            uiState.collect {
+                it.subscription.toString().log(TAG)
+            }
+        }
     }
 
-    fun getSubscriptionData() = viewModelScope.launch {
-        val result = repository.readSubscription()
-        _uiState.value = SubscriptionUiState(result)
+    private fun refreshDb() = viewModelScope.launch {
+        repository.deleteSubscription()
     }
 
-    private fun refreshSubscriptionData() {
+    private fun getSubscription() = viewModelScope.launch {
+        repository.readSubscription().collect {
+            _uiState.value = SubscriptionUiState(
+                it.mapIndexed { index, subscription ->
+                    subscription.copy(plan = subscription.plan?.mapIndexed { planIndex, plan ->
+                        if (planIndex == 0) {
+                            plan.copy(isSelected = true)
+                        } else plan
+                    })
+                }
+            )
+        }
+    }
+
+    private fun refreshSubscriptionData() = viewModelScope.launch {
         val ref = database.reference.child("subscription")
 
         ref.addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+
+                refreshDb()
 
                 snapshot.children.forEach {
                     it.getValue(com.shop.eagleway.response.Subscription::class.java)?.apply {
@@ -82,13 +131,67 @@ class SubscriptionViewModel(private val repository: EaglewayRepository): ViewMod
         })
     }
 
-    fun requestPayment() {
-        PaymentUtility.getPaymentDataRequest("1")
+
+    fun onUpgradeClicked(currentPage: Int) = viewModelScope.launch {
+        uiState.collect {
+            it.subscription[currentPage].plan?.forEach { plan ->
+                if (plan.isSelected == true) {
+                    plan.toString().log(TAG)
+                }
+            }
+        }
+    }
+
+    /**
+     * Subscription GPay API
+     * */
+    private val paymentsClient: PaymentsClient by lazy {
+        Wallet.getPaymentsClient(
+            context,
+            Wallet.WalletOptions.Builder().setEnvironment(WalletConstants.ENVIRONMENT_TEST)
+                .build()
+        )
+    }
+
+    private val isReadyToPay = IsReadyToPayRequest.fromJson(baseConfigurationJson().toString())
+
+    val task = paymentsClient.isReadyToPay(isReadyToPay).addOnCompleteListener {
+        if (it.isComplete) {
+            try {
+                it.getResult(ApiException::class.java)?.let { state ->
+                    if (state) {
+                        "Gpay Success".log(TAG)
+                    }
+                    else {
+                        "Gpay Failed".log(TAG, "Error")
+                    }
+                }
+            }catch (exception: ApiException) {
+                Log.e(TAG, exception.message.toString())
+            }
+        } else {
+            "Server error".log(TAG, "Error")
+        }
+    }
+
+    private fun baseConfigurationJson(): JSONObject {
+        return JSONObject()
+            .put("apiVersion", 2)
+            .put("apiVersionMinor", 0)
+            .put("allowedPaymentMethods", getCardPaymentMethod)
+    }
+
+    private val getCardPaymentMethod = JSONObject().apply {
+        put("type", "CARD")
+        put("parameters", JSONObject().apply {
+            put("allowedCardNetworks", JSONArray(listOf("VISA", "MASTERCARD")))
+            put("allowedAuthMethods", JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS")))
+        })
     }
 
     init {
-        refreshSubscriptionData()
-        getSubscriptionData()
+       refreshSubscriptionData()
+        getSubscription()
     }
 
     companion object {
@@ -99,7 +202,7 @@ class SubscriptionViewModel(private val repository: EaglewayRepository): ViewMod
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as EaglewayApplication)
 
-                SubscriptionViewModel(application.container.eaglewayRepository)
+                SubscriptionViewModel(application.container.eaglewayRepository, application)
             }
         }
     }

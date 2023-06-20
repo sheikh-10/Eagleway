@@ -54,9 +54,11 @@ interface EaglewayRepository {
 
     suspend fun deleteCurrency()
 
-    suspend fun readSubscription(): List<Subscription>
+    fun readSubscription(): Flow<List<Subscription>>
 
     suspend fun insertSubscription(subscription: Subscription)
+
+    suspend fun deleteSubscription()
 
 }
 
@@ -112,8 +114,10 @@ class OfflineEaglewayRepository(private val dao: ProductDao, private val subDao:
 
     override suspend fun deleteCurrency() = dao.deleteCurrency()
 
-    override suspend fun readSubscription(): List<Subscription> = subDao.read()
+    override fun readSubscription(): Flow<List<Subscription>> = subDao.read()
 
     override suspend fun insertSubscription(subscription: Subscription) = subDao.insert(subscription)
+
+    override suspend fun deleteSubscription() = subDao.deleteSubscriptions()
 }
 

@@ -111,7 +111,7 @@ data class Currency(
     val currencyFlag: Int? = null
 )
 
-@Entity(tableName = "subscription", indices = [Index(value = ["name"], unique = true)])
+@Entity(tableName = "subscription", indices = [Index(value = ["name", "plan", "plan_detail"], unique = true)])
 data class Subscription(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")

@@ -59,9 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.shop.eagleway.R
-import com.shop.eagleway.data.Datasource
 import com.shop.eagleway.data.Subscription
 import com.shop.eagleway.utility.PaymentUtility
 import com.shop.eagleway.utility.onPlanClick
@@ -82,19 +82,19 @@ fun SubscriptionScreen(modifier: Modifier = Modifier,
 
     val subscriptionUiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(true) {
-        while (isAutoScrolled) {
-            try {
-                delay(2000L)
-                pagerState.animateScrollToPage(pagerState.currentPage.inc())
-                if (pagerState.currentPage == subscriptionUiState.subscription.lastIndex) {
-                    isAutoScrolled = false
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message.toString())
-            }
-        }
-    }
+//    LaunchedEffect(true) {
+//        while (isAutoScrolled) {
+//            try {
+//                delay(2000L)
+//                pagerState.animateScrollToPage(pagerState.currentPage.inc())
+//                if (pagerState.currentPage == subscriptionUiState.subscription.lastIndex) {
+//                    isAutoScrolled = false
+//                }
+//            } catch (e: Exception) {
+//                Log.e(TAG, e.message.toString())
+//            }
+//        }
+//    }
 
     Column(modifier = modifier.fillMaxSize()) {
         Card {
@@ -114,7 +114,7 @@ fun SubscriptionScreen(modifier: Modifier = Modifier,
 
         Spacer(modifier = modifier.height(5.dp))
         PageIndicator(
-            numberOfPages = Datasource.subscriptions().size,
+            numberOfPages = subscriptionUiState.subscription.size,
             selectedPage = pagerState.currentPage,
             defaultRadius = 10.dp,
             selectedLength = 20.dp,
@@ -128,17 +128,20 @@ fun SubscriptionScreen(modifier: Modifier = Modifier,
         Spacer(modifier = modifier.height(20.dp))
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)) {
-            items(Datasource.subscriptions()[pagerState.currentPage].planDetail!!) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(imageVector = Icons.Outlined.Check, contentDescription = null, tint = colorResource(
-                        id = R.color.purple_1
-                    ))
 
-                    Column {
-                        Text(text = it.title.toString(), style = MaterialTheme.typography.h6, color = colorResource(
+            if (subscriptionUiState.subscription.isNotEmpty()) {
+                items(subscriptionUiState.subscription[pagerState.currentPage].planDetail!!) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(imageVector = Icons.Outlined.Check, contentDescription = null, tint = colorResource(
                             id = R.color.purple_1
                         ))
-                        Text(text = it.description.toString())
+
+                        Column {
+                            Text(text = it.title.toString(), style = MaterialTheme.typography.h6, color = colorResource(
+                                id = R.color.purple_1
+                            ))
+                            Text(text = it.description.toString())
+                        }
                     }
                 }
             }
@@ -271,6 +274,7 @@ private fun SubscriptionPlanCard(modifier: Modifier = Modifier,
                                  subscription: Subscription? = null,
                                  viewModel: SubscriptionViewModel = viewModel()
                                  ) {
+
     Card(elevation = 4.dp,
         backgroundColor = colorResource(id = R.color.purple_3),
         shape = RoundedCornerShape(10),
@@ -305,8 +309,31 @@ private fun SubscriptionPlanCard(modifier: Modifier = Modifier,
                 }
             }, verticalArrangement = Arrangement.spacedBy(8.dp))
 
-            OutlinedButton(onClick = viewModel::requestPayment, shape = RoundedCornerShape(30)) {
-                Text(text = "Upgrade to ${subscription?.name}", color = Color.Black)
+            var paymentState by remember { mutableStateOf(false) }
+
+            viewModel.task.addOnCompleteListener {
+                if (it.isComplete) {
+                    try {
+                        it.getResult(ApiException::class.java)?.let {  state ->
+                            paymentState = state
+                        }
+                    }catch (e: Exception) {
+                        Log.e(TAG, e.message.toString())
+                    }
+                }
+            }
+
+            OutlinedButton(
+                onClick = { viewModel.onUpgradeClicked(pagerState?.currentPage ?: 0) },
+                shape = RoundedCornerShape(30),
+                enabled = paymentState
+                ) {
+
+                if (paymentState) {
+                    Text(text = "Upgrade to ${subscription?.name}", color = Color.Black)
+                } else {
+                    Text(text = "Gpay is not supported on this device")
+                }
             }
         }
     }

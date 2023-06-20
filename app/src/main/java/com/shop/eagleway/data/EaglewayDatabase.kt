@@ -3,7 +3,7 @@ package com.shop.eagleway.data
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [ProductPreview::class, ProductInfo::class, ProductImage::class, MeasuringUnit::class, Category::class, Currency::class, Subscription::class], version = 17, exportSchema = false)
+@Database(entities = [ProductPreview::class, ProductInfo::class, ProductImage::class, MeasuringUnit::class, Category::class, Currency::class, Subscription::class], version = 18, exportSchema = false)
 @TypeConverters(Converters::class, ListConverters::class)
 abstract class EaglewayDatabase: RoomDatabase() {
     abstract fun productDao(): ProductDao

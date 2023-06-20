@@ -16,8 +16,11 @@ fun String.toast(context: Context) {
     Toast.makeText(context, this, Toast.LENGTH_LONG).show()
 }
 
-fun String.log(tag: String) {
-    Log.d(tag, this)
+fun String.log(tag: String, state: String = "Debug") {
+    when (state) {
+        "Debug" -> Log.d(tag, this)
+        "Error" -> Log.e(tag, this)
+    }
 }
 
 typealias ComposableFun = @Composable () -> Unit
@@ -62,7 +65,7 @@ enum class LoadingState {
     True, False
 }
 
-fun Subscription.SubscriptionPlan.onPlanClick(plan: List<Subscription.SubscriptionPlan>?, planIndex: Int): List<Subscription.SubscriptionPlan> {
+fun Subscription.SubscriptionPlan.onPlanClick(plan: List<Subscription.SubscriptionPlan>?, planIndex: Int = 0): List<Subscription.SubscriptionPlan> {
     return plan?.map { it.copy(isSelected = it.id == planIndex) } ?: emptyList()
 }
 
