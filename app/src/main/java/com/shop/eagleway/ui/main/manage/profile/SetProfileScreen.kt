@@ -1,16 +1,12 @@
 package com.shop.eagleway.ui.main.manage.profile
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +74,7 @@ fun SetProfileScreen(modifier: Modifier = Modifier,
             )
 
             OutlinedButton(
-                onClick = { viewModel.updateUserNameToDatabase()},
+                onClick = { viewModel.updateUserInfoToDatabase()},
                 modifier = modifier
                     .fillMaxWidth()
                     .wrapContentWidth(align = Alignment.End)) {

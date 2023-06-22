@@ -6,5 +6,7 @@ data class User(val userNum: String? = null,
     data class UserInfo(val userName: String? = null,
                         val businessName: String? = null,
                         val language: String? = null,
-                        val email: String? = null)
+                        val email: String? = null,
+                        val subscribedUser: Boolean? = null
+                        )
 }

@@ -1,15 +1,10 @@
 package com.shop.eagleway.viewmodel
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.os.CountDownTimer
-import android.util.Log
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -25,8 +20,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.shop.eagleway.R
 import com.shop.eagleway.request.User
-import com.shop.eagleway.utility.log
-import com.shop.eagleway.utility.toast
 
 private const val TAG = "HomeViewModel"
 class HomeViewModel: ViewModel() {
@@ -59,6 +52,10 @@ class HomeViewModel: ViewModel() {
 
     private var timerValue: Int = 0
 
+
+    var subscribedUser by mutableStateOf(false)
+        private set
+
     fun updateUserName(user: String) { userName = user }
 
     fun updateBusinessInfo(business: String) { businessName = business }
@@ -66,6 +63,8 @@ class HomeViewModel: ViewModel() {
     fun updateLanguage(language: String) { userLanguage = language }
 
     fun updateEmail(email: String) { userEmail = email }
+
+    fun updateSubscribeState(state: Boolean) { subscribedUser = state }
 
     fun logout() { auth.signOut() }
 
@@ -88,6 +87,7 @@ class HomeViewModel: ViewModel() {
                         userInfo?.userName?.let { userName = it }
                         userInfo?.language?.let { userLanguage = it }
                         userInfo?.email?.let { userEmail = it }
+                        userInfo?.subscribedUser?.let { subscribedUser = it }
                     }
                 }
             }
@@ -96,11 +96,10 @@ class HomeViewModel: ViewModel() {
         })
     }
 
-    fun updateUserNameToDatabase() {
-        Log.d(TAG, "Clicked")
+    fun updateUserInfoToDatabase() {
         val ref = database.getReference("usersInfo").child(indexKey)
 
-        ref.setValue(User(userNum, User.UserInfo(userName = userName, businessName = businessName, language = userLanguage, email = userEmail)))
+        ref.setValue(User(userNum, User.UserInfo(userName = userName, businessName = businessName, language = userLanguage, email = userEmail, subscribedUser = subscribedUser)))
     }
 
     fun timer(context: Context) {

@@ -27,11 +27,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.razorpay.Checkout
+import com.razorpay.CheckoutActivity
 import com.shop.eagleway.EaglewayApplication
 import com.shop.eagleway.data.EaglewayRepository
 import com.shop.eagleway.data.Subscription
 import com.shop.eagleway.ui.main.subscription.SubscriptionScreen
-import com.shop.eagleway.utility.PaymentUtility
 import com.shop.eagleway.utility.log
 import com.shop.eagleway.utility.toast
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,62 +132,15 @@ class SubscriptionViewModel(
         })
     }
 
-
-    fun onUpgradeClicked(currentPage: Int) = viewModelScope.launch {
+    fun onUpgradeClicked(currentPage: Int, startPayment: (Int) -> Unit) = viewModelScope.launch {
         uiState.collect {
             it.subscription[currentPage].plan?.forEach { plan ->
                 if (plan.isSelected == true) {
                     plan.toString().log(TAG)
+                    plan.price?.let(startPayment)
                 }
             }
         }
-    }
-
-    /**
-     * Subscription GPay API
-     * */
-    private val paymentsClient: PaymentsClient by lazy {
-        Wallet.getPaymentsClient(
-            context,
-            Wallet.WalletOptions.Builder().setEnvironment(WalletConstants.ENVIRONMENT_TEST)
-                .build()
-        )
-    }
-
-    private val isReadyToPay = IsReadyToPayRequest.fromJson(baseConfigurationJson().toString())
-
-    val task = paymentsClient.isReadyToPay(isReadyToPay).addOnCompleteListener {
-        if (it.isComplete) {
-            try {
-                it.getResult(ApiException::class.java)?.let { state ->
-                    if (state) {
-                        "Gpay Success".log(TAG)
-                    }
-                    else {
-                        "Gpay Failed".log(TAG, "Error")
-                    }
-                }
-            }catch (exception: ApiException) {
-                Log.e(TAG, exception.message.toString())
-            }
-        } else {
-            "Server error".log(TAG, "Error")
-        }
-    }
-
-    private fun baseConfigurationJson(): JSONObject {
-        return JSONObject()
-            .put("apiVersion", 2)
-            .put("apiVersionMinor", 0)
-            .put("allowedPaymentMethods", getCardPaymentMethod)
-    }
-
-    private val getCardPaymentMethod = JSONObject().apply {
-        put("type", "CARD")
-        put("parameters", JSONObject().apply {
-            put("allowedCardNetworks", JSONArray(listOf("VISA", "MASTERCARD")))
-            put("allowedAuthMethods", JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS")))
-        })
     }
 
     init {

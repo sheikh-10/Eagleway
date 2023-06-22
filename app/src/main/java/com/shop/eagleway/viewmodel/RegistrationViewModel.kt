@@ -217,7 +217,7 @@ class RegistrationViewModel: ViewModel(), Registration {
 
         storeNumToLocalDb(context)
         ref.push().setValue(User(userPhoneInput,
-            User.UserInfo(userName = userName, businessName = businessName)))
+            User.UserInfo(userName = userName, businessName = businessName, subscribedUser = false)))
 
         state = LoadingState.False
     }

@@ -1,5 +1,6 @@
 package com.shop.eagleway.ui.main.subscription
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -51,6 +52,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -65,6 +67,7 @@ import com.shop.eagleway.R
 import com.shop.eagleway.data.Subscription
 import com.shop.eagleway.utility.PaymentUtility
 import com.shop.eagleway.utility.onPlanClick
+import com.shop.eagleway.utility.toCurrency
 import com.shop.eagleway.viewmodel.SubscriptionViewModel
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
@@ -81,20 +84,6 @@ fun SubscriptionScreen(modifier: Modifier = Modifier,
     var isAutoScrolled by remember { mutableStateOf(true) }
 
     val subscriptionUiState by viewModel.uiState.collectAsState()
-
-//    LaunchedEffect(true) {
-//        while (isAutoScrolled) {
-//            try {
-//                delay(2000L)
-//                pagerState.animateScrollToPage(pagerState.currentPage.inc())
-//                if (pagerState.currentPage == subscriptionUiState.subscription.lastIndex) {
-//                    isAutoScrolled = false
-//                }
-//            } catch (e: Exception) {
-//                Log.e(TAG, e.message.toString())
-//            }
-//        }
-//    }
 
     Column(modifier = modifier.fillMaxSize()) {
         Card {
@@ -275,6 +264,8 @@ private fun SubscriptionPlanCard(modifier: Modifier = Modifier,
                                  viewModel: SubscriptionViewModel = viewModel()
                                  ) {
 
+    val context = LocalContext.current
+
     Card(elevation = 4.dp,
         backgroundColor = colorResource(id = R.color.purple_3),
         shape = RoundedCornerShape(10),
@@ -309,31 +300,16 @@ private fun SubscriptionPlanCard(modifier: Modifier = Modifier,
                 }
             }, verticalArrangement = Arrangement.spacedBy(8.dp))
 
-            var paymentState by remember { mutableStateOf(false) }
-
-            viewModel.task.addOnCompleteListener {
-                if (it.isComplete) {
-                    try {
-                        it.getResult(ApiException::class.java)?.let {  state ->
-                            paymentState = state
-                        }
-                    }catch (e: Exception) {
-                        Log.e(TAG, e.message.toString())
-                    }
-                }
-            }
-
             OutlinedButton(
-                onClick = { viewModel.onUpgradeClicked(pagerState?.currentPage ?: 0) },
+                onClick = {
+                    viewModel.onUpgradeClicked(pagerState?.currentPage ?: 0) { amount ->
+                        PaymentUtility().startPayment(amount, context as Activity)
+                    } },
                 shape = RoundedCornerShape(30),
-                enabled = paymentState
+                enabled = true
                 ) {
 
-                if (paymentState) {
                     Text(text = "Upgrade to ${subscription?.name}", color = Color.Black)
-                } else {
-                    Text(text = "Gpay is not supported on this device")
-                }
             }
         }
     }
@@ -358,7 +334,7 @@ private fun PlanCard(modifier: Modifier = Modifier,
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = subscriptionPlan?.name.toString(), style = MaterialTheme.typography.h6, color = Color.White)
                     Spacer(modifier = modifier.weight(1f))
-                    Text(text = "$" + subscriptionPlan?.price.toString(), style = MaterialTheme.typography.h6, color = Color.White)
+                    Text(text = "INR".toCurrency + subscriptionPlan?.price.toString(), style = MaterialTheme.typography.h6, color = Color.White)
                 }
 
                 Text(text = subscriptionPlan?.description.toString(), color = Color.White)

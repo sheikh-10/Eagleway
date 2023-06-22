@@ -1,5 +1,6 @@
 package com.shop.eagleway.ui.main
 
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.CountDownTimer
 import android.provider.Contacts.Intents.UI
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shop.eagleway.R
+import com.shop.eagleway.ui.main.subscription.SubscriptionActivity
 import com.shop.eagleway.ui.theme.EaglewayTheme
 import com.shop.eagleway.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
@@ -69,6 +72,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
         GrowBusiness(name = "Greetings", iconRes = R.drawable.ic_favorite, bgColor = R.color.light_red),
         GrowBusiness(name = "Business Card", iconRes = R.drawable.ic_card, bgColor = R.color.light_pink),
     )
+
+    val context = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()) {
 
@@ -140,7 +145,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             color = Color.White
                             )
 
-                        OutlinedButton(onClick = {}, shape = RoundedCornerShape(50)) {
+                        OutlinedButton(onClick = { SubscriptionActivity.startActivity(context as Activity) }, shape = RoundedCornerShape(50)) {
                             Text(text = "Upgrade", color = colorResource(id = R.color.purple_1))
                         }
                     }
@@ -166,16 +171,6 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                         id = R.color.purple_1
                                     ))
                                 }
-                            }
-
-                            FloatingActionButton(
-                                onClick = { },
-                                backgroundColor = colorResource(id = R.color.purple_1),
-                                modifier = modifier.size(24.dp)
-                            ) {
-                                Icon(imageVector = Icons.Outlined.Info,
-                                    contentDescription = null,
-                                    tint = Color.White)
                             }
                             
                             Spacer(modifier = modifier.weight(1f))
@@ -226,16 +221,6 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                     ))
                                 }
                             }
-
-                            FloatingActionButton(
-                                onClick = { },
-                                backgroundColor = colorResource(id = R.color.purple_1),
-                                modifier = modifier.size(24.dp)
-                            ) {
-                                Icon(imageVector = Icons.Outlined.Info,
-                                    contentDescription = null,
-                                    tint = Color.White)
-                            }
                         }
 
                         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -268,16 +253,6 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                         color = colorResource(id = R.color.purple_1)
                                     )
                                 }
-                            }
-
-                            FloatingActionButton(
-                                onClick = { },
-                                backgroundColor = colorResource(id = R.color.purple_1),
-                                modifier = modifier.size(24.dp)
-                            ) {
-                                Icon(imageVector = Icons.Outlined.Info,
-                                    contentDescription = null,
-                                    tint = Color.White)
                             }
                         }
 
